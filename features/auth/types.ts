@@ -19,6 +19,10 @@ export type LoginResponse = {
   expiresIn: number
 }
 
+export type LogoutResponse = {
+  status: "ok"
+}
+
 export type LoginActionState = {
   error?: string
   fieldErrors?: {

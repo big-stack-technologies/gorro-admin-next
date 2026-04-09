@@ -37,7 +37,7 @@ export async function loginAction(
       password,
     })
     await setAuthTokens(res.data)
-    redirect(routes.home)
+    redirect(routes.protected.admin.base)
   } catch (e) {
     unstable_rethrow(e)
     if (isApiError(e)) {

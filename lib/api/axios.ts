@@ -3,25 +3,15 @@ import axios, {
   InternalAxiosRequestConfig,
   type AxiosRequestConfig,
 } from "axios"
-import { redirect } from "next/navigation"
 
-import { getAuthAccessToken, removeAuthTokens } from "@/lib/cookies"
+import { clearSessionCookiesViaRoute } from "@/lib/auth/clear-session"
+import { getAuthAccessToken } from "@/lib/cookies"
 import { endpoints } from "@/lib/endpoints"
 import { env } from "@/lib/env"
-import { routes } from "@/lib/routes"
 
-export type ApiError = {
-  message: string
-  status: number | undefined
-}
+import type { ApiError } from "@/lib/api/api-error"
 
-export function isApiError(value: unknown): value is ApiError {
-  if (typeof value !== "object" || value === null) return false
-  const o = value as Partial<ApiError>
-  if (typeof o.message !== "string") return false
-  if (o.status !== undefined && typeof o.status !== "number") return false
-  return true
-}
+export { type ApiError, isApiError } from "@/lib/api/api-error"
 
 export const apiClient = axios.create({
   baseURL: env.NEXT_PUBLIC_API_URL,
@@ -52,11 +42,7 @@ apiClient.interceptors.response.use(
     const status = error.response?.status
     const requestUrl = error.config?.url ?? ""
     const isLoginRequest = requestUrl.includes(endpoints.auth.login)
-
-    if (status === 401 && !isLoginRequest) {
-      await removeAuthTokens()
-      redirect(routes.public.login)
-    }
+    const isLogoutRequest = requestUrl.includes(endpoints.auth.logout)
 
     const apiError: ApiError = {
       message: error.message || "An unexpected error occurred",
@@ -70,6 +56,11 @@ apiClient.interceptors.response.use(
         `Request failed with status ${error.response.status}`
     } else if (error.request) {
       apiError.message = "No response received from server"
+    }
+
+    if (status === 401 && !isLoginRequest && !isLogoutRequest) {
+      await clearSessionCookiesViaRoute()
+      return Promise.reject(apiError)
     }
 
     return Promise.reject(apiError)

@@ -1,17 +1,60 @@
-import { Button } from "@/components/ui/button"
+"use client"
+
+import * as React from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { getAdminBreadcrumbSegments } from "@/lib/breadcrumbs"
 
 export function SiteHeader() {
+  const pathname = usePathname()
+  const segments = getAdminBreadcrumbSegments(pathname)
+
   return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1" />
+    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <div className="flex min-w-0 items-center gap-2 px-4">
+        <SidebarTrigger className="-ml-1 shrink-0" />
         <Separator
           orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
+          className="mr-2 shrink-0 data-[orientation=vertical]:h-6"
         />
-        <h1 className="text-base font-medium">Documents</h1>
+        <Breadcrumb className="min-w-0">
+          <BreadcrumbList>
+            {segments.map((segment, i) => {
+              const isLast = i === segments.length - 1
+              return (
+                <React.Fragment key={`${segment.label}-${i}`}>
+                  {i > 0 && (
+                    <BreadcrumbSeparator className="hidden md:block" />
+                  )}
+                  <BreadcrumbItem
+                    className={!isLast ? "hidden max-w-48 truncate md:block" : "min-w-0 max-w-[min(100%,20rem)] truncate"}
+                  >
+                    {isLast ? (
+                      <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                    ) : segment.href != null ? (
+                      <BreadcrumbLink asChild>
+                        <Link href={segment.href}>{segment.label}</Link>
+                      </BreadcrumbLink>
+                    ) : (
+                      <span className="text-muted-foreground">{segment.label}</span>
+                    )}
+                  </BreadcrumbItem>
+                </React.Fragment>
+              )
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
     </header>
   )

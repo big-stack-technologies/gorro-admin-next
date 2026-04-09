@@ -2,9 +2,10 @@ import { Geist_Mono, Outfit } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryProvider } from "@/lib/query/providers";
+import { cn } from "@/lib/utils"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { QueryProvider } from "@/lib/query/providers"
+import { Toaster } from "@/components/ui/sonner"
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -29,6 +30,7 @@ export default function RootLayout({
           <TooltipProvider>
             <QueryProvider>
               {children}
+              <Toaster />
             </QueryProvider>
           </TooltipProvider>
         </ThemeProvider>

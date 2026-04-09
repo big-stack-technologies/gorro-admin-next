@@ -12,6 +12,14 @@ export const routes = {
     admin: {
       base: "/admin",
     },
+    users: {
+      base: "/admin/users",
+    },
+    transactions: {
+      base: "/admin/transactions",
+      detail: (id: string) =>
+        `/admin/transactions/${encodeURIComponent(id)}`,
+    },
   },
 } as const
 

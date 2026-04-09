@@ -1,18 +1,37 @@
 "use client"
 
+import Image from "next/image"
+import Link from "next/link"
+
 import { LoginForm } from "@/features/auth"
-import { GalleryVerticalEndIcon } from "lucide-react"
+import { routes } from "@/lib/routes"
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <GalleryVerticalEndIcon className="size-4" />
-          </div>
-          Acme Inc.
-        </a>
+        <Link
+          href={routes.home}
+          className="flex items-center justify-center self-center"
+        >
+          <Image
+            src="/logos/gorro-logo.svg"
+            alt="Gorro"
+            width={96}
+            height={24}
+            className="h-6 w-auto dark:hidden"
+            priority
+          />
+          <Image
+            src="/logos/gorro-logo-white.svg"
+            alt=""
+            width={161}
+            height={40}
+            className="hidden h-6 w-auto dark:block"
+            aria-hidden
+            priority
+          />
+        </Link>
         <LoginForm />
       </div>
     </div>

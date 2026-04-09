@@ -1,4 +1,37 @@
-import { QueryClient } from "@tanstack/react-query"
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
+
+import { isApiError } from "@/lib/api/api-error"
+import { routes } from "@/lib/routes"
+
+function isUnauthorizedError(error: unknown): boolean {
+  if (isApiError(error) && error.status === 401) return true
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    typeof (error as { status: unknown }).status === "number" &&
+    (error as { status: number }).status === 401
+  ) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Server Actions invoked from the client run axios on the server; `redirect()` there
+ * does not reliably update the client router. After the API clears cookies and
+ * rejects with 401, perform a full navigation from the browser.
+ */
+function redirectToLoginIfUnauthorized(error: unknown) {
+  if (typeof window === "undefined") return
+  if (!isUnauthorizedError(error)) return
+  window.location.assign(routes.public.login)
+}
+
+function shouldRetry(failureCount: number, error: unknown): boolean {
+  if (isUnauthorizedError(error)) return false
+  return failureCount < 1
+}
 
 /**
  * Default query options for TanStack Query
@@ -6,20 +39,14 @@ import { QueryClient } from "@tanstack/react-query"
 const queryConfig = {
   defaultOptions: {
     queries: {
-      // Stale time: data is considered fresh for 1 minute
       staleTime: 60 * 1000,
-      // Cache time: unused data stays in cache for 5 minutes
       gcTime: 5 * 60 * 1000,
-      // Retry failed requests once
-      retry: 1,
-      // Refetch on window focus in development only
+      retry: shouldRetry,
       refetchOnWindowFocus: process.env.NODE_ENV === "development",
-      // Refetch on reconnect
       refetchOnReconnect: true,
     },
     mutations: {
-      // Retry failed mutations once
-      retry: 1,
+      retry: shouldRetry,
     },
   },
 }
@@ -29,11 +56,13 @@ const queryConfig = {
  * This should be used for client-side rendering
  */
 export function createQueryClient(): QueryClient {
-  return new QueryClient(queryConfig)
+  return new QueryClient({
+    ...queryConfig,
+    queryCache: new QueryCache({
+      onError: redirectToLoginIfUnauthorized,
+    }),
+    mutationCache: new MutationCache({
+      onError: redirectToLoginIfUnauthorized,
+    }),
+  })
 }
-
-/**
- * Default QueryClient instance for client-side use
- * This will be used in the QueryClientProvider
- */
-export const queryClient = createQueryClient()
