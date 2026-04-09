@@ -13,6 +13,12 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const authenticated = isAuthenticated(request)
 
+  if (pathname === routes.home) {
+    return NextResponse.redirect(
+      new URL(routes.protected.admin.base, request.url)
+    )
+  }
+
   const isProtectedRoute = pathname.startsWith(routes.protected.admin.base)
   const isPublicAuthRoute = pathname === routes.public.login
 
