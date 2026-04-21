@@ -57,3 +57,13 @@ export function formatCurrencyAmount(value: number, currency: string = "NGN") {
     return `${value} ${currency}`
   }
 }
+
+/**
+ * Format integer minor units (e.g. kobo/cents) as currency for display.
+ */
+export function formatCurrencyFromMinorUnits(
+  minorUnits: number,
+  currency: string = "NGN"
+) {
+  return formatCurrencyAmount(minorUnits / 100, currency)
+}

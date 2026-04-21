@@ -53,13 +53,13 @@ export const transactionsTableFilters: DataTableFilterField[] = [
     type: "number",
     param: "minAmount",
     label: "Min amount",
-    placeholder: "Minor units",
+    placeholder: "Major units (e.g. 100.50)",
   },
   {
     type: "number",
     param: "maxAmount",
     label: "Max amount",
-    placeholder: "Minor units",
+    placeholder: "Major units (e.g. 100.50)",
   },
   {
     type: "date",

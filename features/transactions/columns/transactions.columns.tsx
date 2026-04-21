@@ -4,7 +4,11 @@ import { CopyableTruncatedId } from "@/components/copyable-truncated-id"
 import { Badge } from "@/components/ui/badge"
 import { TransactionRowActions } from "@/features/transactions/ui"
 import type { Transaction } from "@/features/transactions/types"
-import { emptyAsNa, formatCurrencyAmount, formatDateTime } from "@/lib/utils"
+import {
+  emptyAsNa,
+  formatCurrencyFromMinorUnits,
+  formatDateTime,
+} from "@/lib/utils"
 
 export const transactionsColumns: ColumnDef<Transaction>[] = [
   {
@@ -29,10 +33,9 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
   {
     id: "amount",
     header: "Amount",
-    accessorFn: (row) =>
-      formatCurrencyAmount(row.amountMinorUnits, row.currency),
+    accessorFn: (row) => row.amountMinorUnits,
     cell: ({ row }) =>
-      formatCurrencyAmount(
+      formatCurrencyFromMinorUnits(
         row.original.amountMinorUnits,
         row.original.currency
       ),

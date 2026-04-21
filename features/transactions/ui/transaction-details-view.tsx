@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/table"
 import type { Transaction } from "@/features/transactions/types"
 import { useGetTransaction } from "@/features/transactions/usecases"
-import { emptyAsNa, formatCurrencyAmount, formatDateTime } from "@/lib/utils"
+import {
+  emptyAsNa,
+  formatCurrencyFromMinorUnits,
+  formatDateTime,
+} from "@/lib/utils"
 
 function DetailField({
   label,
@@ -141,7 +145,7 @@ export function TransactionDetailsView({
             showFieldSkeleton || amountMinorUnits == null || !currency ? (
               <Skeleton className="h-4 w-28" />
             ) : (
-              formatCurrencyAmount(amountMinorUnits, currency)
+              formatCurrencyFromMinorUnits(amountMinorUnits, currency)
             )
           }
         />
@@ -276,16 +280,22 @@ export function TransactionDetailsView({
                     </TableCell>
                     <TableCell className="align-top whitespace-nowrap">
                       {entry.debitAmount != null
-                        ? formatCurrencyAmount(entry.debitAmount, currency)
+                        ? formatCurrencyFromMinorUnits(entry.debitAmount, currency)
                         : "—"}
                     </TableCell>
                     <TableCell className="align-top whitespace-nowrap">
                       {entry.creditAmount != null
-                        ? formatCurrencyAmount(entry.creditAmount, currency)
+                        ? formatCurrencyFromMinorUnits(
+                            entry.creditAmount,
+                            currency
+                          )
                         : "—"}
                     </TableCell>
                     <TableCell className="hidden align-top whitespace-nowrap md:table-cell">
-                      {formatCurrencyAmount(entry.balanceAfter, currency)}
+                      {formatCurrencyFromMinorUnits(
+                        entry.balanceAfter,
+                        currency
+                      )}
                     </TableCell>
                     <TableCell className="hidden max-w-xs align-top text-xs lg:table-cell">
                       {entry.description}
