@@ -28,7 +28,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { useTransactionsAnalyticsSummary } from "@/features/transactions/usecases"
-import { cn, formatCurrencyAmount, formatSnakeCaseWords } from "@/lib/utils"
+import { cn, formatCurrencyFromMinorUnits, formatSnakeCaseWords } from "@/lib/utils"
 
 function StatCard({
   icon: Icon,
@@ -203,13 +203,13 @@ export function TransactionsAnalyticsSection() {
         <StatCard
           icon={CoinsIcon}
           label="Total value"
-          value={formatCurrencyAmount(data.totalValue, data.currency)}
+          value={formatCurrencyFromMinorUnits(data.totalValue, data.currency)}
           hint={data.currency}
         />
         <StatCard
           icon={SigmaIcon}
           label="Average transaction"
-          value={formatCurrencyAmount(
+          value={formatCurrencyFromMinorUnits(
             data.averageTransactionValue,
             data.currency
           )}

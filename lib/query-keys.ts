@@ -21,6 +21,12 @@ export const QUERY_KEYS = {
     amlFlags: ["transactions", "analytics", "aml-flags"] as const,
   },
 
+  withdrawalRequests: {
+    all: ["withdrawal-requests"],
+    list: ["withdrawal-requests", "list"] as const,
+    detail: (id: string) => ["withdrawal-requests", "detail", id] as const,
+  },
+
   dashboard: {
     all: ["dashboard"] as const,
     summary: (period: string) => ["dashboard", "summary", period] as const,

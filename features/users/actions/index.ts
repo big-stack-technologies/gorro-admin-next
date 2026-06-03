@@ -1,4 +1,6 @@
 export * from "./change-user-role"
+export * from "./disable-user-withdrawals"
+export * from "./enable-user-withdrawals"
 export * from "./freeze-user"
 export * from "./get-user"
 export * from "./get-users-analytics-summary"

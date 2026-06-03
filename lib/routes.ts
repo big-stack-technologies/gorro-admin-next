@@ -20,6 +20,11 @@ export const routes = {
       detail: (id: string) =>
         `/admin/transactions/${encodeURIComponent(id)}`,
     },
+    withdrawalRequests: {
+      base: "/admin/withdrawal-requests",
+      detail: (id: string) =>
+        `/admin/withdrawal-requests/${encodeURIComponent(id)}`,
+    },
   },
 } as const
 

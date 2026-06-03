@@ -13,6 +13,17 @@ export const endpoints = {
       `/admin/users/${encodeURIComponent(id)}/freeze`,
     userResetPinById: (id: string) =>
       `/admin/users/${encodeURIComponent(id)}/reset-pin`,
+    userWithdrawalsDisableById: (id: string) =>
+      `/admin/users/${encodeURIComponent(id)}/withdrawals/disable`,
+    userWithdrawalsEnableById: (id: string) =>
+      `/admin/users/${encodeURIComponent(id)}/withdrawals/enable`,
+    withdrawalRequests: "/admin/users/withdrawal-requests",
+    withdrawalRequestById: (id: string) =>
+      `/admin/users/withdrawal-requests/${encodeURIComponent(id)}`,
+    withdrawalRequestApproveById: (id: string) =>
+      `/admin/users/withdrawal-requests/${encodeURIComponent(id)}/approve`,
+    withdrawalRequestRejectById: (id: string) =>
+      `/admin/users/withdrawal-requests/${encodeURIComponent(id)}/reject`,
     transactions: "/admin/transactions",
     transactionById: (id: string) =>
       `/admin/transactions/${encodeURIComponent(id)}`,

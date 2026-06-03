@@ -33,3 +33,13 @@ export const freezeUserFormSchema = z.object({
 export type FreezeUserFormValues = z.infer<typeof freezeUserFormSchema>
 
 export type FreezeUserPayload = FreezeUserFormValues
+
+export const withdrawalsReasonFormSchema = z.object({
+  reason: z.string().min(1, "Reason is required"),
+})
+
+export type WithdrawalsReasonFormValues = z.infer<
+  typeof withdrawalsReasonFormSchema
+>
+
+export type WithdrawalsReasonPayload = WithdrawalsReasonFormValues

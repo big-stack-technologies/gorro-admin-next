@@ -11,6 +11,10 @@ export type User = {
   role: string
   nin: string | null
   bvn: string | null
+  withdrawalsDisabled: boolean
+  withdrawalsDisabledAt: string | null
+  withdrawalsDisabledReason: string | null
+  withdrawalsEnabledAt: string | null
   createdAt: string
   updatedAt: string
 }

@@ -1,5 +1,7 @@
 export * from "./user-change-role-dialog"
 export * from "./user-details-dialog"
+export * from "./user-disable-withdrawals-dialog"
+export * from "./user-enable-withdrawals-dialog"
 export * from "./user-freeze-dialog"
 export * from "./user-reset-pin-alert-dialog"
 export * from "./user-row-actions"

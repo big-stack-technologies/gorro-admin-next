@@ -8,6 +8,8 @@ import {
   ShieldCheckIcon,
   SnowflakeIcon,
   UserCogIcon,
+  BanIcon,
+  CircleCheckIcon,
 } from "lucide-react"
 
 import {
@@ -20,17 +22,22 @@ import type { User } from "@/features/users/types"
 
 import { UserChangeRoleDialog } from "./user-change-role-dialog"
 import { UserDetailsDialog } from "./user-details-dialog"
+import { UserDisableWithdrawalsDialog } from "./user-disable-withdrawals-dialog"
+import { UserEnableWithdrawalsDialog } from "./user-enable-withdrawals-dialog"
 import { UserFreezeDialog } from "./user-freeze-dialog"
 import { UserResetPinAlertDialog } from "./user-reset-pin-alert-dialog"
 import { UserUpdateDialog } from "./user-update-dialog"
 
 type UserRowActionGroupsParams = {
   isSuperAdmin: boolean
+  withdrawalsDisabled: boolean
   onViewUser: () => void
   onUpdateUser: () => void
   onChangeRole: () => void
   onFreeze: () => void
   onResetPin: () => void
+  onDisableWithdrawals: () => void
+  onEnableWithdrawals: () => void
 }
 
 function useUserRowActionGroups(
@@ -38,11 +45,14 @@ function useUserRowActionGroups(
 ): DataTableRowActionGroup[] {
   const {
     isSuperAdmin,
+    withdrawalsDisabled,
     onViewUser,
     onUpdateUser,
     onChangeRole,
     onFreeze,
     onResetPin,
+    onDisableWithdrawals,
+    onEnableWithdrawals,
   } = params
 
   return useMemo(
@@ -91,6 +101,23 @@ function useUserRowActionGroups(
                   icon: KeyRoundIcon,
                   onSelect: onResetPin,
                 },
+                ...(withdrawalsDisabled
+                  ? [
+                      {
+                        id: "enable-withdrawals",
+                        label: "Enable withdrawals",
+                        icon: CircleCheckIcon,
+                        onSelect: onEnableWithdrawals,
+                      },
+                    ]
+                  : [
+                      {
+                        id: "disable-withdrawals",
+                        label: "Disable withdrawals",
+                        icon: BanIcon,
+                        onSelect: onDisableWithdrawals,
+                      },
+                    ]),
               ]
             : []),
           {
@@ -106,11 +133,14 @@ function useUserRowActionGroups(
     ],
     [
       isSuperAdmin,
+      withdrawalsDisabled,
       onViewUser,
       onUpdateUser,
       onChangeRole,
       onFreeze,
       onResetPin,
+      onDisableWithdrawals,
+      onEnableWithdrawals,
     ]
   )
 }
@@ -129,6 +159,8 @@ export function UserRowActions({ user }: UserRowActionsProps) {
   const [roleOpen, setRoleOpen] = useState(false)
   const [freezeOpen, setFreezeOpen] = useState(false)
   const [resetPinOpen, setResetPinOpen] = useState(false)
+  const [disableWithdrawalsOpen, setDisableWithdrawalsOpen] = useState(false)
+  const [enableWithdrawalsOpen, setEnableWithdrawalsOpen] = useState(false)
 
   const openActions = useMemo(
     () => ({
@@ -137,12 +169,15 @@ export function UserRowActions({ user }: UserRowActionsProps) {
       onChangeRole: () => setRoleOpen(true),
       onFreeze: () => setFreezeOpen(true),
       onResetPin: () => setResetPinOpen(true),
+      onDisableWithdrawals: () => setDisableWithdrawalsOpen(true),
+      onEnableWithdrawals: () => setEnableWithdrawalsOpen(true),
     }),
     []
   )
 
   const groups = useUserRowActionGroups({
     isSuperAdmin,
+    withdrawalsDisabled: user.withdrawalsDisabled,
     ...openActions,
   })
 
@@ -172,6 +207,20 @@ export function UserRowActions({ user }: UserRowActionsProps) {
             open={resetPinOpen}
             onOpenChange={setResetPinOpen}
           />
+          {!user.withdrawalsDisabled ? (
+            <UserDisableWithdrawalsDialog
+              user={user}
+              open={disableWithdrawalsOpen}
+              onOpenChange={setDisableWithdrawalsOpen}
+            />
+          ) : null}
+          {user.withdrawalsDisabled ? (
+            <UserEnableWithdrawalsDialog
+              user={user}
+              open={enableWithdrawalsOpen}
+              onOpenChange={setEnableWithdrawalsOpen}
+            />
+          ) : null}
         </>
       ) : null}
     </>

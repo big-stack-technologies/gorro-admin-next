@@ -13,6 +13,7 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
   const admin = routes.protected.admin.base
   const users = routes.protected.users.base
   const transactions = routes.protected.transactions.base
+  const withdrawalRequests = routes.protected.withdrawalRequests.base
 
   const normalized =
     pathname.length > 1 && pathname.endsWith("/")
@@ -50,6 +51,21 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
       { label: "Dashboard", href: admin },
       { label: "Transactions", href: transactions },
       { label: "Transaction details" },
+    ]
+  }
+
+  if (normalized === withdrawalRequests) {
+    return [
+      { label: "Dashboard", href: admin },
+      { label: "Withdrawal requests" },
+    ]
+  }
+
+  if (normalized.startsWith(`${withdrawalRequests}/`)) {
+    return [
+      { label: "Dashboard", href: admin },
+      { label: "Withdrawal requests", href: withdrawalRequests },
+      { label: "Withdrawal request details" },
     ]
   }
 

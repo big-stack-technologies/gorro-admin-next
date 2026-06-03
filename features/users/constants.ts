@@ -45,3 +45,12 @@ export const USER_ROLE_FILTER_OPTIONS = USER_ROLES.map((value) => ({
   value,
   label: USER_ROLE_LABELS[value],
 }))
+
+/** Moderator or super_admin — required for withdrawal request approve/reject. */
+export function isModeratorOrAbove(roles?: string[]): boolean {
+  if (!roles?.length) return false
+  return (
+    roles.includes(USER_ROLE.moderator) ||
+    roles.includes(USER_ROLE.super_admin)
+  )
+}

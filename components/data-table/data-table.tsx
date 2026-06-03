@@ -286,8 +286,6 @@ function DataTableInner<TData>({
   const rows = data?.data ?? []
   const meta = data?.meta
 
-  console.log({ rows })
-
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: rows,

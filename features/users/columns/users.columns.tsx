@@ -36,6 +36,18 @@ export const usersColumns: ColumnDef<User>[] = [
     ),
   },
   {
+    id: "withdrawals",
+    header: "Withdrawals",
+    accessorFn: (row) =>
+      row.withdrawalsDisabled ? "disabled" : "enabled",
+    cell: ({ row }) =>
+      row.original.withdrawalsDisabled ? (
+        <Badge variant="destructive">Disabled</Badge>
+      ) : (
+        <Badge variant="outline">Enabled</Badge>
+      ),
+  },
+  {
     accessorKey: "gender",
     header: "Gender",
     cell: ({ row }) => emptyAsNa(row.original.gender),

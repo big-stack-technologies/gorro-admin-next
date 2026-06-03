@@ -42,6 +42,7 @@ import type { DashboardPeriod } from "@/features/dashboard/types"
 import {
   cn,
   formatCurrencyAmount,
+  formatCurrencyFromMinorUnits,
   formatDateTime,
   formatSnakeCaseWords,
 } from "@/lib/utils"
@@ -297,7 +298,7 @@ export function DashboardPage() {
                 hint={
                   <>
                     Avg.{" "}
-                    {formatCurrencyAmount(
+                    {formatCurrencyFromMinorUnits(
                       data.transactions.averageTransactionValue,
                       data.transactions.currency
                     )}
@@ -307,7 +308,7 @@ export function DashboardPage() {
               <StatCard
                 icon={CoinsIcon}
                 label="Volume"
-                value={formatCurrencyAmount(
+                value={formatCurrencyFromMinorUnits( //formatCurrencyAmount
                   data.transactions.totalValue,
                   data.transactions.currency
                 )}
