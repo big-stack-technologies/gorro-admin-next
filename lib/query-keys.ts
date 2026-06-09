@@ -27,6 +27,17 @@ export const QUERY_KEYS = {
     detail: (id: string) => ["withdrawal-requests", "detail", id] as const,
   },
 
+  wallet: {
+    main: (userId: string) => ["wallet", "main", userId] as const,
+  },
+
+  referrals: {
+    all: ["referrals"],
+    list: ["referrals", "list"] as const,
+    stats: ["referrals", "stats"] as const,
+    detail: (userId: string) => ["referrals", "detail", userId] as const,
+  },
+
   dashboard: {
     all: ["dashboard"] as const,
     summary: (period: string) => ["dashboard", "summary", period] as const,

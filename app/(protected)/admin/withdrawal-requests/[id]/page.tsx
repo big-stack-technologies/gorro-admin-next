@@ -1,4 +1,4 @@
-import { WithdrawalRequestDetailPage } from "@/features/withdrawal-requests"
+import { WithdrawalRequestDetailPage } from "@/features/withdrawal-requests/ui"
 
 type PageProps = {
   params: Promise<{ id: string }>

@@ -7,7 +7,8 @@ export async function rejectWithdrawalRequestAction(
   id: string
 ): Promise<unknown> {
   const { data } = await post<unknown>(
-    endpoints.admin.withdrawalRequestRejectById(id)
+    endpoints.admin.withdrawalRequestRejectById(id),
+    {}
   )
   return data
 }

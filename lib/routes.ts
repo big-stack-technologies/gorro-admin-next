@@ -25,6 +25,11 @@ export const routes = {
       detail: (id: string) =>
         `/admin/withdrawal-requests/${encodeURIComponent(id)}`,
     },
+    referrals: {
+      base: "/admin/referrals",
+      detail: (userId: string) =>
+        `/admin/referrals/${encodeURIComponent(userId)}`,
+    },
   },
 } as const
 

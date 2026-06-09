@@ -7,10 +7,37 @@ export type ApiError = {
   status: number | undefined
 }
 
-export function isApiError(value: unknown): value is ApiError {
+/** Thrown by axios — serializable from Server Actions (unlike plain ApiError objects). */
+export class ApiRequestError extends Error {
+  readonly status: number | undefined
+
+  constructor(message: string, status?: number) {
+    super(message)
+    this.name = "ApiRequestError"
+    this.status = status
+  }
+}
+
+export function isApiError(
+  value: unknown
+): value is ApiError | ApiRequestError {
+  if (value instanceof ApiRequestError) return true
   if (typeof value !== "object" || value === null) return false
   const o = value as Partial<ApiError>
   if (typeof o.message !== "string") return false
   if (o.status !== undefined && typeof o.status !== "number") return false
   return true
+}
+
+export function getApiErrorMessage(error: unknown): string {
+  if (error instanceof ApiRequestError) return error.message
+  if (isApiError(error)) return error.message
+  if (error instanceof Error) return error.message
+  return String(error)
+}
+
+export function getApiErrorStatus(error: unknown): number | undefined {
+  if (error instanceof ApiRequestError) return error.status
+  if (isApiError(error)) return error.status
+  return undefined
 }

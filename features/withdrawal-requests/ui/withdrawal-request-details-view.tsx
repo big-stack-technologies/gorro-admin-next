@@ -2,7 +2,12 @@
 
 import type { ReactNode } from "react"
 import { useState } from "react"
-import { CircleAlertIcon, Loader2Icon, RefreshCwIcon } from "lucide-react"
+import {
+  CircleAlertIcon,
+  Loader2Icon,
+  RefreshCwIcon,
+  WalletIcon,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -30,7 +35,14 @@ import {
   useGetWithdrawalRequest,
   useRejectWithdrawalRequest,
 } from "@/features/withdrawal-requests/usecases"
+import { UserWalletBalanceDialog } from "@/features/withdrawal-requests/ui/user-wallet-balance-dialog"
 import { emptyAsNa, formatCurrencyAmount, formatDateTime } from "@/lib/utils"
+
+function formatWithdrawalUserName(fullName: string) {
+  const trimmed = fullName.trim()
+  if (!trimmed || /\bundefined\b/.test(trimmed)) return "—"
+  return trimmed
+}
 
 function DetailField({
   label,
@@ -75,6 +87,7 @@ export function WithdrawalRequestDetailsView({
   const [confirmKind, setConfirmKind] = useState<"approve" | "reject" | null>(
     null
   )
+  const [balanceDialogOpen, setBalanceDialogOpen] = useState(false)
 
   const approveMutation = useApproveWithdrawalRequest(withdrawalRequestId)
   const rejectMutation = useRejectWithdrawalRequest(withdrawalRequestId)
@@ -154,6 +167,29 @@ export function WithdrawalRequestDetailsView({
             disabled={actionPending}
           >
             Reject
+          </Button>
+        </div>
+      ) : null}
+
+      {merged?.userInfo?.id ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
+          <div className="min-w-0 space-y-1">
+            <p className="text-sm font-medium">Requesting user</p>
+            <p className="truncate text-sm text-muted-foreground">
+              {formatWithdrawalUserName(merged.userInfo.fullName)}
+            </p>
+            <p className="font-mono text-xs text-muted-foreground break-all">
+              {merged.userInfo.id}
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setBalanceDialogOpen(true)}
+          >
+            <WalletIcon data-icon="inline-start" />
+            Check user balance
           </Button>
         </div>
       ) : null}
@@ -400,6 +436,15 @@ export function WithdrawalRequestDetailsView({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+      ) : null}
+
+      {merged?.userInfo?.id ? (
+        <UserWalletBalanceDialog
+          userId={merged.userInfo.id}
+          userName={formatWithdrawalUserName(merged.userInfo.fullName)}
+          open={balanceDialogOpen}
+          onOpenChange={setBalanceDialogOpen}
+        />
       ) : null}
     </div>
   )

@@ -8,6 +8,26 @@ export type WithdrawalRequestStatus =
 
 export type WithdrawalRequestProvider = "FINCRA"
 
+export type WithdrawalRequestUserInfo = {
+  id: string
+  fullName: string
+}
+
+export type WalletNuban = {
+  accountNumber: string
+  accountName: string
+  bankName: string
+  bankCode: string
+}
+
+export type UserMainWallet = {
+  ownerId: string
+  internalAccountNumber: string
+  balanceMinorUnits: number
+  balanceMajorUnits: number
+  nubans: WalletNuban[]
+}
+
 export type WithdrawalRequest = {
   id: string
   status: WithdrawalRequestStatus
@@ -28,4 +48,5 @@ export type WithdrawalRequest = {
   rejectedAt: string | null
   rejectionReason: string | null
   failureReason: string | null
+  userInfo?: WithdrawalRequestUserInfo | null
 }

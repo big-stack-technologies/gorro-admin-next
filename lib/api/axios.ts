@@ -9,9 +9,15 @@ import { getAuthAccessToken } from "@/lib/cookies"
 import { endpoints } from "@/lib/endpoints"
 import { env } from "@/lib/env"
 
-import type { ApiError } from "@/lib/api/api-error"
+import { ApiRequestError, type ApiError } from "@/lib/api/api-error"
 
-export { type ApiError, isApiError } from "@/lib/api/api-error"
+export {
+  ApiRequestError,
+  type ApiError,
+  getApiErrorMessage,
+  getApiErrorStatus,
+  isApiError,
+} from "@/lib/api/api-error"
 
 export const apiClient = axios.create({
   baseURL: env.NEXT_PUBLIC_API_URL,
@@ -60,10 +66,10 @@ apiClient.interceptors.response.use(
 
     if (status === 401 && !isLoginRequest && !isLogoutRequest) {
       await clearSessionCookiesViaRoute()
-      return Promise.reject(apiError)
+      return Promise.reject(new ApiRequestError(apiError.message, status))
     }
 
-    return Promise.reject(apiError)
+    return Promise.reject(new ApiRequestError(apiError.message, status))
   }
 )
 

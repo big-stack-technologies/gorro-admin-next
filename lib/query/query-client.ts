@@ -1,9 +1,10 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
 
-import { isApiError } from "@/lib/api/api-error"
+import { ApiRequestError, isApiError } from "@/lib/api/api-error"
 import { routes } from "@/lib/routes"
 
 function isUnauthorizedError(error: unknown): boolean {
+  if (error instanceof ApiRequestError && error.status === 401) return true
   if (isApiError(error) && error.status === 401) return true
   if (
     typeof error === "object" &&
@@ -46,7 +47,7 @@ const queryConfig = {
       refetchOnReconnect: true,
     },
     mutations: {
-      retry: shouldRetry,
+      retry: false,
     },
   },
 }

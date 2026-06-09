@@ -40,5 +40,14 @@ export const endpoints = {
     transactionsAnalyticsSummary: "/admin/analytics/transactions/summary",
     transactionsVolume: "/admin/analytics/transactions/volume",
     amlFlags: "/admin/analytics/aml-flags",
+    referrals: "/admin/referrals",
+    referralsStats: "/admin/referrals/stats",
+    referralByUserId: (id: string) =>
+      `/admin/referrals/${encodeURIComponent(id)}`,
+    referralsRetrigger: "/admin/referrals/retrigger",
+  },
+  wallet: {
+    mainByUserId: (userId: string) =>
+      `/wallet/main/${encodeURIComponent(userId)}`,
   },
 } as const
