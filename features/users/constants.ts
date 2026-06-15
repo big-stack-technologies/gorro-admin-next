@@ -18,6 +18,7 @@ export const USER_ROLES = [
   "super_admin",
   "moderator",
   "support_agent",
+  "partner",
 ] as const
 
 export type UserRole = (typeof USER_ROLES)[number]
@@ -31,6 +32,7 @@ export const USER_ROLE = {
   super_admin: "super_admin",
   moderator: "moderator",
   support_agent: "support_agent",
+  partner: "partner",
 } as const satisfies Record<UserRole, UserRole>
 
 const USER_ROLE_LABELS: Record<UserRole, string> = {
@@ -38,6 +40,7 @@ const USER_ROLE_LABELS: Record<UserRole, string> = {
   super_admin: "Super admin",
   moderator: "Moderator",
   support_agent: "Support agent",
+  partner: "Partner",
 }
 
 /** Select / filter options: same values as {@link USER_ROLES}, with labels. */

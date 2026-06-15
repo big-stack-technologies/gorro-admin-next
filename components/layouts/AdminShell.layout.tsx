@@ -1,14 +1,18 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 import { AppSidebar } from "@/components/partials/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { canAccessAdminRoute } from "@/features/auth/access"
+import { getProfileAction } from "@/features/auth/actions"
+import type { AuthProfile } from "@/features/auth/types"
+import { PartnerRouteGuard } from "@/features/auth/ui/partner-route-guard"
 import { isApiError } from "@/lib/api/api-error"
 import { createQueryClient } from "@/lib/query/query-client"
 import { QUERY_KEYS } from "@/lib/query-keys"
 import { routes } from "@/lib/routes"
-import { getProfileAction } from "@/features/auth/actions"
 
 export default async function AdminShellLayout({
   children,
@@ -28,6 +32,13 @@ export default async function AdminShellLayout({
     throw e
   }
 
+  const profile = queryClient.getQueryData<AuthProfile>(QUERY_KEYS.session)
+  const pathname = (await headers()).get("x-pathname") ?? ""
+
+  if (!canAccessAdminRoute(profile?.roles, pathname)) {
+    redirect(routes.protected.admin.base)
+  }
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <SidebarProvider
@@ -44,7 +55,7 @@ export default async function AdminShellLayout({
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                {children}
+                <PartnerRouteGuard>{children}</PartnerRouteGuard>
               </div>
             </div>
           </div>

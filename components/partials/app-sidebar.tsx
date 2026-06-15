@@ -29,6 +29,8 @@ import {
 import Image from "next/image"
 import Link from "next/link"
 
+import { isPartnerOnly } from "@/features/auth/access"
+import { useGetProfile } from "@/features/auth/usecases"
 import { routes } from "@/lib/routes"
 
 const data = {
@@ -186,6 +188,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: profile } = useGetProfile()
+  const partnerOnly = isPartnerOnly(profile?.roles)
+
+  const navMain = partnerOnly
+    ? data.navMain.filter((item) => item.url === routes.protected.admin.base)
+    : data.navMain
+
+  const navSecondary = partnerOnly ? [] : data.navSecondary
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -222,9 +233,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
         {/* <NavDocuments items={data.documents} /> */}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {navSecondary.length > 0 ? (
+          <NavSecondary items={navSecondary} className="mt-auto" />
+        ) : null}
       </SidebarContent>
       <SidebarFooter>
         <NavUserProfile />
