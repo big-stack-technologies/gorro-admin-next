@@ -16,6 +16,7 @@ import { useGetUser } from "@/features/users/usecases"
 import { isApiError } from "@/lib/api/api-error"
 import {
   cn,
+  formatCurrencyFromMinorUnits,
   formatDateTime,
   formatNgn,
   formatSnakeCaseWords,
@@ -109,7 +110,7 @@ export function UserDetailsDialog({
                 ) : isUserError || userDetail == null ? (
                   "—"
                 ) : (
-                  formatNgn(userDetail.totalBalance)
+                  formatCurrencyFromMinorUnits(userDetail.totalBalance)
                 )
               }
             />

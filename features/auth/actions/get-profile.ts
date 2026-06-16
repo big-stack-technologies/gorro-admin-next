@@ -6,6 +6,5 @@ import { endpoints } from "@/lib/endpoints"
 
 export async function getProfileAction(): Promise<AuthProfile> {
   const { data } = await get<AuthProfile>(endpoints.auth.me)
-  console.log(data)
   return data
 }
