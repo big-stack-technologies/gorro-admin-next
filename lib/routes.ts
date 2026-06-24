@@ -8,6 +8,10 @@ export const routes = {
   public: {
     login: "/login",
   },
+  /** Clears session cookies in the browser, then redirects to login. */
+  api: {
+    sessionClear: "/api/auth/logout",
+  },
   protected: {
     admin: {
       base: "/admin",

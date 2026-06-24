@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,13 +13,13 @@ import {
 } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { User } from "@/features/users/types"
+import { UserWalletBalancePopover } from "@/features/users/ui/user-wallet-balance-popover"
 import { useGetUser } from "@/features/users/usecases"
 import { isApiError } from "@/lib/api/api-error"
 import {
   cn,
   formatCurrencyFromMinorUnits,
   formatDateTime,
-  formatNgn,
   formatSnakeCaseWords,
   joinPartsOrEmDash,
 } from "@/lib/utils"
@@ -51,6 +52,14 @@ function DetailRow({
   )
 }
 
+function VerificationBadge({ verified }: { verified: boolean }) {
+  return (
+    <Badge variant={verified ? "outline" : "secondary"}>
+      {verified ? "Verified" : "Not verified"}
+    </Badge>
+  )
+}
+
 export function UserDetailsDialog({
   user,
   open,
@@ -63,6 +72,8 @@ export function UserDetailsDialog({
     isError: isUserError,
   } = userQuery
 
+  const displayUser = userDetail ?? user
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 p-0 sm:max-w-lg">
@@ -74,7 +85,19 @@ export function UserDetailsDialog({
         <div className="max-h-[min(70vh,520px)] overflow-y-auto px-4">
           <dl className="py-2">
             <DetailRow label="Email" value={user.email ?? "—"} />
+            <DetailRow
+              label="Email verified"
+              value={
+                <VerificationBadge verified={displayUser.emailVerified} />
+              }
+            />
             <DetailRow label="Phone" value={user.phoneNumber ?? "—"} />
+            <DetailRow
+              label="Phone verified"
+              value={
+                <VerificationBadge verified={displayUser.phoneNumberVerified} />
+              }
+            />
             <DetailRow
               label="Name"
               value={joinPartsOrEmDash([
@@ -139,6 +162,7 @@ export function UserDetailsDialog({
         </div>
 
         <div className="flex justify-end gap-2 border-t bg-muted/50 p-4">
+          <UserWalletBalancePopover userId={user.id} />
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>

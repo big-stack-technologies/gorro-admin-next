@@ -9,6 +9,8 @@ export type User = {
   middleName: string | null
   gender: string
   role: string
+  emailVerified: boolean
+  phoneNumberVerified: boolean
   nin: string | null
   bvn: string | null
   withdrawalsDisabled: boolean

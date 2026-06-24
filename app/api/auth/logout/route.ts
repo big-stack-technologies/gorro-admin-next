@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server"
 
 import { removeAuthTokens } from "@/lib/cookies"
+import { routes } from "@/lib/routes"
 
-/** Clears session cookies; cookie mutation is only allowed here (Route Handler), not from RSC. */
+/** Clears session cookies in the browser response, then redirects to login. */
+export async function GET(request: Request) {
+  await removeAuthTokens()
+  return NextResponse.redirect(new URL(routes.public.login, request.url))
+}
+
+/** Clears session cookies (JSON/API callers). */
 export async function POST() {
   await removeAuthTokens()
   return new NextResponse(null, { status: 204 })

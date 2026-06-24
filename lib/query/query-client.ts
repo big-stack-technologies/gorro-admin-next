@@ -26,7 +26,7 @@ function isUnauthorizedError(error: unknown): boolean {
 function redirectToLoginIfUnauthorized(error: unknown) {
   if (typeof window === "undefined") return
   if (!isUnauthorizedError(error)) return
-  window.location.assign(routes.public.login)
+  window.location.assign(routes.api.sessionClear)
 }
 
 function shouldRetry(failureCount: number, error: unknown): boolean {

@@ -27,7 +27,7 @@ export default async function AdminShellLayout({
     })
   } catch (e) {
     if (isApiError(e) && e.status === 401) {
-      redirect(routes.public.login)
+      redirect(routes.api.sessionClear)
     }
     throw e
   }

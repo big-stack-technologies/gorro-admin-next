@@ -4,10 +4,10 @@ import axios, {
   type AxiosRequestConfig,
 } from "axios"
 
-import { clearSessionCookiesViaRoute } from "@/lib/auth/clear-session"
 import { getAuthAccessToken } from "@/lib/cookies"
 import { endpoints } from "@/lib/endpoints"
 import { env } from "@/lib/env"
+import { routes } from "@/lib/routes"
 
 import { ApiRequestError, type ApiError } from "@/lib/api/api-error"
 
@@ -65,7 +65,9 @@ apiClient.interceptors.response.use(
     }
 
     if (status === 401 && !isLoginRequest && !isLogoutRequest) {
-      await clearSessionCookiesViaRoute()
+      if (typeof window !== "undefined") {
+        window.location.assign(routes.api.sessionClear)
+      }
       return Promise.reject(new ApiRequestError(apiError.message, status))
     }
 
