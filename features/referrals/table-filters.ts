@@ -10,4 +10,22 @@ export const referralsTableFilters: DataTableFilterField[] = [
     options: BONUS_PAID_FILTER_OPTIONS.map((o) => ({ ...o })),
     emptyLabel: "All bonuses",
   },
+  {
+    type: "text",
+    param: "referralCode",
+    label: "Refferal Code",
+    placeholder: "Code",
+  },
+  {
+    type: "date",
+    param: "createdAfter",
+    label: "Created after",
+    boundary: "startOfDay",
+  },
+  {
+    type: "date",
+    param: "createdBefore",
+    label: "Created before",
+    boundary: "endOfDay",
+  },
 ]
