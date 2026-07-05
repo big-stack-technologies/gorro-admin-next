@@ -25,6 +25,7 @@ import {
   ArrowLeftRightIcon,
   BanknoteIcon,
   UsersRoundIcon,
+  PiggyBankIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -72,6 +73,14 @@ const data = {
       url: routes.protected.referrals.base,
       icon: (
         <UsersRoundIcon
+        />
+      ),
+    },
+    {
+      title: "Savings",
+      url: routes.protected.savings.base,
+      icon: (
+        <PiggyBankIcon
         />
       ),
     },

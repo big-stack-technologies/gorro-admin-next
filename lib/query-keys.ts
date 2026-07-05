@@ -38,6 +38,18 @@ export const QUERY_KEYS = {
     detail: (userId: string) => ["referrals", "detail", userId] as const,
   },
 
+  savings: {
+    all: ["savings"],
+    rates: ["savings", "rates"] as const,
+    fixedBands: ["savings", "fixed-bands"] as const,
+    wht: ["savings", "wht"] as const,
+    metricsSummary: (filters: Record<string, string>) =>
+      ["savings", "metrics", "summary", filters] as const,
+    accounts: {
+      list: ["savings", "accounts", "list"] as const,
+    },
+  },
+
   dashboard: {
     all: ["dashboard"] as const,
     summary: (period: string) => ["dashboard", "summary", period] as const,

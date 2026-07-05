@@ -34,6 +34,9 @@ export const routes = {
       detail: (userId: string) =>
         `/admin/referrals/${encodeURIComponent(userId)}`,
     },
+    savings: {
+      base: "/admin/savings",
+    },
   },
 } as const
 
