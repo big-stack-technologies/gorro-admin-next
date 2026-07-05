@@ -45,6 +45,15 @@ export const endpoints = {
     referralByUserId: (id: string) =>
       `/admin/referrals/${encodeURIComponent(id)}`,
     referralsRetrigger: "/admin/referrals/retrigger",
+    savingsRates: "/admin/savings/rates",
+    savingsRateByProduct: (productType: string) =>
+      `/admin/savings/rates/${encodeURIComponent(productType)}`,
+    savingsFixedRateBands: "/admin/savings/fixed-rate-bands",
+    savingsFixedRateBandById: (id: string) =>
+      `/admin/savings/fixed-rate-bands/${encodeURIComponent(id)}`,
+    savingsWht: "/admin/savings/wht",
+    savingsMetricsSummary: "/admin/savings/metrics/summary",
+    savingsMetricsAccounts: "/admin/savings/metrics/accounts",
   },
   wallet: {
     mainByUserId: (userId: string) =>
