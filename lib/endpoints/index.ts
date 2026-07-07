@@ -54,6 +54,9 @@ export const endpoints = {
     savingsWht: "/admin/savings/wht",
     savingsMetricsSummary: "/admin/savings/metrics/summary",
     savingsMetricsAccounts: "/admin/savings/metrics/accounts",
+    featureFlags: "/admin/feature-flags",
+    featureFlagByKey: (key: string) =>
+      `/admin/feature-flags/${encodeURIComponent(key)}`,
   },
   wallet: {
     mainByUserId: (userId: string) =>
