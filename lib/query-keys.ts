@@ -56,4 +56,9 @@ export const QUERY_KEYS = {
     usersGrowth: ["dashboard", "users-growth"] as const,
     transactionsVolume: ["dashboard", "transactions-volume"] as const,
   },
+
+  featureFlags: {
+    all: ["feature-flags"],
+    list: ["feature-flags", "list"] as const,
+  },
 } as const

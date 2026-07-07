@@ -37,6 +37,9 @@ export const routes = {
     savings: {
       base: "/admin/savings",
     },
+    featureFlags: {
+      base: "/admin/feature-flags",
+    },
   },
 } as const
 

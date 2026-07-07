@@ -26,6 +26,7 @@ import {
   BanknoteIcon,
   UsersRoundIcon,
   PiggyBankIcon,
+  FlagIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -81,6 +82,14 @@ const data = {
       url: routes.protected.savings.base,
       icon: (
         <PiggyBankIcon
+        />
+      ),
+    },
+    {
+      title: "Feature flags",
+      url: routes.protected.featureFlags.base,
+      icon: (
+        <FlagIcon
         />
       ),
     },
