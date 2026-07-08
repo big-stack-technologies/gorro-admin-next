@@ -6,11 +6,23 @@ import { usePathname } from "next/navigation"
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { routes } from "@/lib/routes"
+
+export type NavItem = {
+  title: string
+  url: string
+  icon?: React.ReactNode
+}
+
+export type NavSection = {
+  title?: string
+  items: NavItem[]
+}
 
 function normalizePathname(pathname: string) {
   return pathname.length > 1 && pathname.endsWith("/")
@@ -32,37 +44,36 @@ function isNavItemActive(pathname: string, itemUrl: string) {
   return path === itemUrl || path.startsWith(`${itemUrl}/`)
 }
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: React.ReactNode
-  }[]
-}) {
+export function NavMain({ sections }: { sections: NavSection[] }) {
   const pathname = usePathname()
 
   return (
-    <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                tooltip={item.title}
-                asChild
-                isActive={isNavItemActive(pathname, item.url)}
-              >
-                <Link href={item.url}>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <>
+      {sections.map((section, index) => (
+        <SidebarGroup key={section.title ?? `nav-${index}`}>
+          {section.title ? (
+            <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
+          ) : null}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {section.items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    asChild
+                    isActive={isNavItemActive(pathname, item.url)}
+                  >
+                    <Link href={item.url}>
+                      {item.icon}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      ))}
+    </>
   )
 }

@@ -39,68 +39,63 @@ import { routes } from "@/lib/routes"
 const data = {
   navMain: [
     {
-      title: "Dashboard",
-      url: routes.protected.admin.base,
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
+      items: [
+        {
+          title: "Dashboard",
+          url: routes.protected.admin.base,
+          icon: <LayoutDashboardIcon />,
+        },
+      ],
     },
     {
-      title: "Users",
-      url: routes.protected.users.base,
-      icon: (
-        <UsersIcon
-        />
-      ),
+      title: "Operations",
+      items: [
+        {
+          title: "Users",
+          url: routes.protected.users.base,
+          icon: <UsersIcon />,
+        },
+        {
+          title: "Transactions",
+          url: routes.protected.transactions.base,
+          icon: <ArrowLeftRightIcon />,
+        },
+        {
+          title: "Withdrawal requests",
+          url: routes.protected.withdrawalRequests.base,
+          icon: <BanknoteIcon />,
+        },
+        {
+          title: "Referrals",
+          url: routes.protected.referrals.base,
+          icon: <UsersRoundIcon />,
+        },
+      ],
     },
     {
-      title: "Transactions",
-      url: routes.protected.transactions.base,
-      icon: (
-        <ArrowLeftRightIcon
-        />
-      ),
+      title: "Products",
+      items: [
+        {
+          title: "Savings",
+          url: routes.protected.savings.base,
+          icon: <PiggyBankIcon />,
+        },
+        {
+          title: "Ajo",
+          url: routes.protected.ajo.base,
+          icon: <HandCoinsIcon />,
+        },
+      ],
     },
     {
-      title: "Withdrawal requests",
-      url: routes.protected.withdrawalRequests.base,
-      icon: (
-        <BanknoteIcon
-        />
-      ),
-    },
-    {
-      title: "Referrals",
-      url: routes.protected.referrals.base,
-      icon: (
-        <UsersRoundIcon
-        />
-      ),
-    },
-    {
-      title: "Savings",
-      url: routes.protected.savings.base,
-      icon: (
-        <PiggyBankIcon
-        />
-      ),
-    },
-    {
-      title: "Feature flags",
-      url: routes.protected.featureFlags.base,
-      icon: (
-        <FlagIcon
-        />
-      ),
-    },
-    {
-      title: "Ajo",
-      url: routes.protected.ajo.base,
-      icon: (
-        <HandCoinsIcon
-        />
-      ),
+      title: "System",
+      items: [
+        {
+          title: "Feature flags",
+          url: routes.protected.featureFlags.base,
+          icon: <FlagIcon />,
+        },
+      ],
     },
   ],
   navClouds: [
@@ -219,7 +214,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const partnerOnly = isPartnerOnly(profile?.roles)
 
   const navMain = partnerOnly
-    ? data.navMain.filter((item) => item.url === routes.protected.admin.base)
+    ? data.navMain
+        .map((section) => ({
+          ...section,
+          items: section.items.filter(
+            (item) => item.url === routes.protected.admin.base
+          ),
+        }))
+        .filter((section) => section.items.length > 0)
     : data.navMain
 
   const navSecondary = partnerOnly ? [] : data.navSecondary
@@ -260,7 +262,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain sections={navMain} />
         {/* <NavDocuments items={data.documents} /> */}
         {navSecondary.length > 0 ? (
           <NavSecondary items={navSecondary} className="mt-auto" />
