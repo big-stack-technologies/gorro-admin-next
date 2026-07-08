@@ -57,6 +57,12 @@ export const endpoints = {
     featureFlags: "/admin/feature-flags",
     featureFlagByKey: (key: string) =>
       `/admin/feature-flags/${encodeURIComponent(key)}`,
+    ajoConfig: "/admin/ajo/config",
+    ajoGroups: "/admin/ajo/groups",
+  },
+  uploads: {
+    file: "/uploads/file",
+    presign: "/uploads/presign",
   },
   wallet: {
     mainByUserId: (userId: string) =>

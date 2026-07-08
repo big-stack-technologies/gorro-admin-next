@@ -17,6 +17,7 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
   const referrals = routes.protected.referrals.base
   const savings = routes.protected.savings.base
   const featureFlags = routes.protected.featureFlags.base
+  const ajo = routes.protected.ajo.base
 
   const normalized =
     pathname.length > 1 && pathname.endsWith("/")
@@ -98,6 +99,13 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
     return [
       { label: "Dashboard", href: admin },
       { label: "Feature flags" },
+    ]
+  }
+
+  if (normalized === ajo) {
+    return [
+      { label: "Dashboard", href: admin },
+      { label: "Ajo" },
     ]
   }
 

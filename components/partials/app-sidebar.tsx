@@ -27,6 +27,7 @@ import {
   UsersRoundIcon,
   PiggyBankIcon,
   FlagIcon,
+  HandCoinsIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -90,6 +91,14 @@ const data = {
       url: routes.protected.featureFlags.base,
       icon: (
         <FlagIcon
+        />
+      ),
+    },
+    {
+      title: "Ajo",
+      url: routes.protected.ajo.base,
+      icon: (
+        <HandCoinsIcon
         />
       ),
     },

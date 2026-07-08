@@ -40,6 +40,9 @@ export const routes = {
     featureFlags: {
       base: "/admin/feature-flags",
     },
+    ajo: {
+      base: "/admin/ajo",
+    },
   },
 } as const
 
