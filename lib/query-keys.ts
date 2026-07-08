@@ -61,4 +61,14 @@ export const QUERY_KEYS = {
     all: ["feature-flags"],
     list: ["feature-flags", "list"] as const,
   },
+
+  ajo: {
+    all: ["ajo"],
+    config: ["ajo", "config"] as const,
+  },
+
+  uploads: {
+    all: ["uploads"],
+    presign: (fileUrl: string) => ["uploads", "presign", fileUrl] as const,
+  },
 } as const
