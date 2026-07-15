@@ -7,8 +7,7 @@ export const endpoints = {
   admin: {
     users: "/admin/users",
     userById: (id: string) => `/admin/users/${encodeURIComponent(id)}`,
-    userRoleById: (id: string) =>
-      `/admin/users/${encodeURIComponent(id)}/role`,
+    userRoleById: (id: string) => `/admin/users/${encodeURIComponent(id)}/role`,
     userFreezeById: (id: string) =>
       `/admin/users/${encodeURIComponent(id)}/freeze`,
     userResetPinById: (id: string) =>
@@ -59,6 +58,22 @@ export const endpoints = {
       `/admin/feature-flags/${encodeURIComponent(key)}`,
     ajoConfig: "/admin/ajo/config",
     ajoGroups: "/admin/ajo/groups",
+    clusters: "/admin/clusters",
+    clusterById: (id: string) => `/admin/clusters/${encodeURIComponent(id)}`,
+    clusterMembersById: (id: string) =>
+      `/admin/clusters/${encodeURIComponent(id)}/members`,
+    clusterMemberByUserId: (id: string, userId: string) =>
+      `/admin/clusters/${encodeURIComponent(id)}/members/${encodeURIComponent(userId)}`,
+    clusterWithdrawals: "/admin/clusters/withdrawals",
+    clusterWithdrawalsById: (id: string) =>
+      `/admin/clusters/${encodeURIComponent(id)}/withdrawals`,
+    clusterWithdrawalForceRejectById: (id: string, requestId: string) =>
+      `/admin/clusters/${encodeURIComponent(id)}/withdrawals/${encodeURIComponent(requestId)}/force-reject`,
+    clustersAnalyticsOverview: "/admin/clusters/analytics/overview",
+    clustersAnalyticsTopByBalance: "/admin/clusters/analytics/top-by-balance",
+    clustersAnalyticsTopByActivity: "/admin/clusters/analytics/top-by-activity",
+    clustersAnalyticsWithdrawalVolume:
+      "/admin/clusters/analytics/withdrawal-volume",
   },
   uploads: {
     file: "/uploads/file",

@@ -17,6 +17,18 @@ export function isPartnerOnly(roles?: string[]): boolean {
   return roles.includes(USER_ROLE.partner) && !hasAdminAccess(roles)
 }
 
+export function canManageClusters(roles?: string[]): boolean {
+  if (!roles?.length) return false
+  return (
+    roles.includes(USER_ROLE.super_admin) || roles.includes(USER_ROLE.moderator)
+  )
+}
+
+function isClusterAdminPath(pathname: string): boolean {
+  const base = routes.protected.clusters.base
+  return pathname === base || pathname.startsWith(`${base}/`)
+}
+
 export function isAdminDashboardPath(pathname: string): boolean {
   const normalized =
     pathname.length > 1 && pathname.endsWith("/")
@@ -29,6 +41,7 @@ export function canAccessAdminRoute(
   roles: string[] | undefined,
   pathname: string
 ): boolean {
-  if (!isPartnerOnly(roles)) return true
-  return isAdminDashboardPath(pathname)
+  if (isPartnerOnly(roles)) return isAdminDashboardPath(pathname)
+  if (isClusterAdminPath(pathname)) return canManageClusters(roles)
+  return true
 }

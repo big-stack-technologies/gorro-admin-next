@@ -67,6 +67,29 @@ export const QUERY_KEYS = {
     config: ["ajo", "config"] as const,
   },
 
+  clusters: {
+    all: ["clusters"] as const,
+    list: ["clusters", "list"] as const,
+    detail: (id: string) => ["clusters", "detail", id] as const,
+    members: (id: string) => ["clusters", "members", id] as const,
+    withdrawals: {
+      all: ["clusters", "withdrawals"] as const,
+      global: ["clusters", "withdrawals", "global"] as const,
+      byCluster: (id: string) =>
+        ["clusters", "withdrawals", "cluster", id] as const,
+    },
+    analytics: {
+      all: ["clusters", "analytics"] as const,
+      overview: ["clusters", "analytics", "overview"] as const,
+      topByBalance: (limit: number) =>
+        ["clusters", "analytics", "top-by-balance", limit] as const,
+      topByActivity: (filters: Record<string, string | number>) =>
+        ["clusters", "analytics", "top-by-activity", filters] as const,
+      withdrawalVolume: (filters: Record<string, string>) =>
+        ["clusters", "analytics", "withdrawal-volume", filters] as const,
+    },
+  },
+
   uploads: {
     all: ["uploads"],
     presign: (fileUrl: string) => ["uploads", "presign", fileUrl] as const,

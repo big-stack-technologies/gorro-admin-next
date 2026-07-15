@@ -1,6 +1,5 @@
 "use client"
 
-import type { ReactNode } from "react"
 import {
   AlertCircleIcon,
   ArrowLeftRightIcon,
@@ -9,8 +8,8 @@ import {
   RefreshCwIcon,
   SigmaIcon,
 } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
 
+import { AnalyticsStatCard } from "@/components/analytics-stat-card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,41 +28,6 @@ import {
 } from "@/components/ui/tabs"
 import { useTransactionsAnalyticsSummary } from "@/features/transactions/usecases"
 import { cn, formatCurrencyFromMinorUnits, formatSnakeCaseWords } from "@/lib/utils"
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  hint,
-}: {
-  icon: LucideIcon
-  label: string
-  value: ReactNode
-  hint?: ReactNode
-}) {
-  return (
-    <Card className="border-border/80 bg-linear-to-br from-primary/[0.07] from-0% to-card to-45% shadow-sm ring-1 ring-border/50">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-        <div className="min-w-0 space-y-1 pr-2">
-          <CardDescription className="text-[0.7rem] font-medium tracking-wide uppercase">
-            {label}
-          </CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums tracking-tight text-foreground @container/card:text-3xl">
-            {value}
-          </CardTitle>
-        </div>
-        <div className="shrink-0 rounded-xl bg-primary/12 p-2.5 text-primary">
-          <Icon className="size-4" aria-hidden />
-        </div>
-      </CardHeader>
-      {hint ? (
-        <CardContent className="pt-0 text-xs leading-relaxed text-muted-foreground">
-          {hint}
-        </CardContent>
-      ) : null}
-    </Card>
-  )
-}
 
 function BreakdownChips({
   entries,
@@ -195,18 +159,18 @@ export function TransactionsAnalyticsSection() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard
+        <AnalyticsStatCard
           icon={ArrowLeftRightIcon}
           label="Total transactions"
           value={data.totalTransactions.toLocaleString()}
         />
-        <StatCard
+        <AnalyticsStatCard
           icon={CoinsIcon}
           label="Total value"
           value={formatCurrencyFromMinorUnits(data.totalValue, data.currency)}
           hint={data.currency}
         />
-        <StatCard
+        <AnalyticsStatCard
           icon={SigmaIcon}
           label="Average transaction"
           value={formatCurrencyFromMinorUnits(

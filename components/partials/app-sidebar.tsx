@@ -28,11 +28,13 @@ import {
   PiggyBankIcon,
   FlagIcon,
   HandCoinsIcon,
+  Layers3Icon,
+  CircleDollarSignIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-import { isPartnerOnly } from "@/features/auth/access"
+import { canManageClusters, isPartnerOnly } from "@/features/auth/access"
 import { useGetProfile } from "@/features/auth/usecases"
 import { routes } from "@/lib/routes"
 
@@ -66,6 +68,11 @@ const data = {
           icon: <BanknoteIcon />,
         },
         {
+          title: "Cluster withdrawals",
+          url: routes.protected.clusters.withdrawals,
+          icon: <CircleDollarSignIcon />,
+        },
+        {
           title: "Referrals",
           url: routes.protected.referrals.base,
           icon: <UsersRoundIcon />,
@@ -85,6 +92,11 @@ const data = {
           url: routes.protected.ajo.base,
           icon: <HandCoinsIcon />,
         },
+        {
+          title: "Clusters",
+          url: routes.protected.clusters.base,
+          icon: <Layers3Icon />,
+        },
       ],
     },
     {
@@ -101,10 +113,7 @@ const data = {
   navClouds: [
     {
       title: "Capture",
-      icon: (
-        <CameraIcon
-        />
-      ),
+      icon: <CameraIcon />,
       isActive: true,
       url: "#",
       items: [
@@ -120,10 +129,7 @@ const data = {
     },
     {
       title: "Proposal",
-      icon: (
-        <FileTextIcon
-        />
-      ),
+      icon: <FileTextIcon />,
       url: "#",
       items: [
         {
@@ -138,10 +144,7 @@ const data = {
     },
     {
       title: "Prompts",
-      icon: (
-        <FileTextIcon
-        />
-      ),
+      icon: <FileTextIcon />,
       url: "#",
       items: [
         {
@@ -159,26 +162,17 @@ const data = {
     {
       title: "Settings",
       url: "#",
-      icon: (
-        <Settings2Icon
-        />
-      ),
+      icon: <Settings2Icon />,
     },
     {
       title: "Get Help",
       url: "#",
-      icon: (
-        <CircleHelpIcon
-        />
-      ),
+      icon: <CircleHelpIcon />,
     },
     {
       title: "Search",
       url: "#",
-      icon: (
-        <SearchIcon
-        />
-      ),
+      icon: <SearchIcon />,
     },
   ],
   // documents: [
@@ -212,17 +206,23 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: profile } = useGetProfile()
   const partnerOnly = isPartnerOnly(profile?.roles)
+  const clustersAllowed = canManageClusters(profile?.roles)
 
-  const navMain = partnerOnly
-    ? data.navMain
-        .map((section) => ({
-          ...section,
-          items: section.items.filter(
-            (item) => item.url === routes.protected.admin.base
-          ),
-        }))
-        .filter((section) => section.items.length > 0)
-    : data.navMain
+  const navMain = data.navMain
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => {
+        if (partnerOnly) return item.url === routes.protected.admin.base
+        if (
+          item.url === routes.protected.clusters.base ||
+          item.url === routes.protected.clusters.withdrawals
+        ) {
+          return clustersAllowed
+        }
+        return true
+      }),
+    }))
+    .filter((section) => section.items.length > 0)
 
   const navSecondary = partnerOnly ? [] : data.navSecondary
 
