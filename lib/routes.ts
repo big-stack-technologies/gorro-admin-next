@@ -21,8 +21,7 @@ export const routes = {
     },
     transactions: {
       base: "/admin/transactions",
-      detail: (id: string) =>
-        `/admin/transactions/${encodeURIComponent(id)}`,
+      detail: (id: string) => `/admin/transactions/${encodeURIComponent(id)}`,
     },
     withdrawalRequests: {
       base: "/admin/withdrawal-requests",
@@ -42,6 +41,11 @@ export const routes = {
     },
     ajo: {
       base: "/admin/ajo",
+    },
+    clusters: {
+      base: "/admin/clusters",
+      detail: (id: string) => `/admin/clusters/${encodeURIComponent(id)}`,
+      withdrawals: "/admin/clusters/withdrawals",
     },
   },
 } as const
