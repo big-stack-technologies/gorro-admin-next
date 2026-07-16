@@ -24,8 +24,17 @@ export function canManageClusters(roles?: string[]): boolean {
   )
 }
 
+export function canManageReengagement(roles?: string[]): boolean {
+  return canManageClusters(roles)
+}
+
 function isClusterAdminPath(pathname: string): boolean {
   const base = routes.protected.clusters.base
+  return pathname === base || pathname.startsWith(`${base}/`)
+}
+
+function isReengagementAdminPath(pathname: string): boolean {
+  const base = routes.protected.reengagement.base
   return pathname === base || pathname.startsWith(`${base}/`)
 }
 
@@ -43,5 +52,6 @@ export function canAccessAdminRoute(
 ): boolean {
   if (isPartnerOnly(roles)) return isAdminDashboardPath(pathname)
   if (isClusterAdminPath(pathname)) return canManageClusters(roles)
+  if (isReengagementAdminPath(pathname)) return canManageReengagement(roles)
   return true
 }
