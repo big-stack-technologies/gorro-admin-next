@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { addDays, startOfDay } from "date-fns"
 import { Controller, useForm } from "react-hook-form"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
@@ -41,6 +42,7 @@ import {
 import type { AjoGroup } from "@/features/ajo/types"
 import { useAjoConfig, useCreateAjoGroup } from "@/features/ajo/usecases"
 import { USER_ROLE } from "@/features/users/constants"
+import { routes } from "@/lib/routes"
 
 const defaultFormValues: CreateAjoGroupFormValues = {
   name: "",
@@ -143,15 +145,24 @@ export function CreateAjoGroupForm() {
                 copyLabel="Copy invite code"
               />
             </p>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="mt-2"
-              onClick={() => setCreatedGroup(null)}
-            >
-              Dismiss
-            </Button>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button type="button" variant="outline" size="sm" asChild>
+                <Link href={routes.protected.ajo.groupDetail(createdGroup.id)}>
+                  View group
+                </Link>
+              </Button>
+              <Button type="button" variant="ghost" size="sm" asChild>
+                <Link href={routes.protected.ajo.base}>View groups list</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setCreatedGroup(null)}
+              >
+                Dismiss
+              </Button>
+            </div>
           </div>
         ) : null}
 

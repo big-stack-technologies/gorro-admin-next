@@ -110,6 +110,14 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
     ]
   }
 
+  if (normalized.startsWith(`${ajo}/groups/`)) {
+    return [
+      { label: "Dashboard", href: admin },
+      { label: "Ajo", href: ajo },
+      { label: "Group details" },
+    ]
+  }
+
   if (normalized === reengagement) {
     return [
       { label: "Dashboard", href: admin },
