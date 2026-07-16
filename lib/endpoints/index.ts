@@ -58,6 +58,10 @@ export const endpoints = {
       `/admin/feature-flags/${encodeURIComponent(key)}`,
     ajoConfig: "/admin/ajo/config",
     ajoGroups: "/admin/ajo/groups",
+    ajoGroupById: (id: string) =>
+      `/admin/ajo/groups/${encodeURIComponent(id)}`,
+    ajoGroupClose: (id: string) =>
+      `/admin/ajo/groups/${encodeURIComponent(id)}/close`,
     clusters: "/admin/clusters",
     clusterById: (id: string) => `/admin/clusters/${encodeURIComponent(id)}`,
     clusterMembersById: (id: string) =>

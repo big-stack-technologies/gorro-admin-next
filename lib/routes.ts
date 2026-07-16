@@ -41,6 +41,8 @@ export const routes = {
     },
     ajo: {
       base: "/admin/ajo",
+      groupDetail: (id: string) =>
+        `/admin/ajo/groups/${encodeURIComponent(id)}`,
     },
     clusters: {
       base: "/admin/clusters",

@@ -65,6 +65,10 @@ export const QUERY_KEYS = {
   ajo: {
     all: ["ajo"],
     config: ["ajo", "config"] as const,
+    groups: {
+      list: ["ajo", "groups", "list"] as const,
+      detail: (id: string) => ["ajo", "groups", "detail", id] as const,
+    },
   },
 
   clusters: {

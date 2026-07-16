@@ -7,6 +7,18 @@ import {
 
 export const savingsAccountsTableFilters: DataTableFilterField[] = [
   {
+    type: "text",
+    param: "email",
+    label: "Email",
+    placeholder: "Email",
+  },
+  {
+    type: "text",
+    param: "phone",
+    label: "Phone",
+    placeholder: "Phone",
+  },
+  {
     type: "select",
     param: "product",
     label: "Product",
