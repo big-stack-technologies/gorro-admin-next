@@ -67,6 +67,11 @@ export type DataTableProps<TData> = {
    * Query param names match `param` on each field.
    */
   filters?: readonly DataTableFilterField[]
+  /**
+   * Optional namespace for URL pagination params (`{namespace}_page`, `{namespace}_limit`).
+   * Use when multiple DataTables share one route.
+   */
+  paginationNamespace?: string
   emptyMessage?: string
   className?: string
 }
@@ -76,6 +81,16 @@ const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100]
 
 const PAGE_PARAM = "page"
 const LIMIT_PARAM = "limit"
+
+function getPaginationParamNames(namespace?: string) {
+  if (!namespace) {
+    return { page: PAGE_PARAM, limit: LIMIT_PARAM }
+  }
+  return {
+    page: `${namespace}_page`,
+    limit: `${namespace}_limit`,
+  }
+}
 
 function parsePositiveInt(value: string | null, fallback: number): number {
   const n = parseInt(value ?? "", 10)
@@ -93,11 +108,14 @@ function snapToAllowedLimit(n: number, options: number[]): number {
 function getPaginationFromSearchParams(
   searchParams: URLSearchParams,
   allowedLimits: number[],
-  initialPageSize: number
+  initialPageSize: number,
+  paginationNamespace?: string
 ): PaginationState {
-  const page = Math.max(1, parsePositiveInt(searchParams.get(PAGE_PARAM), 1))
+  const { page: pageParam, limit: limitParam } =
+    getPaginationParamNames(paginationNamespace)
+  const page = Math.max(1, parsePositiveInt(searchParams.get(pageParam), 1))
   const rawLimit = parsePositiveInt(
-    searchParams.get(LIMIT_PARAM),
+    searchParams.get(limitParam),
     initialPageSize
   )
   const pageSize = snapToAllowedLimit(rawLimit, allowedLimits)
@@ -173,6 +191,7 @@ function DataTableInner<TData>({
   initialPageSize = DEFAULT_PAGE_SIZE,
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   filters,
+  paginationNamespace,
   emptyMessage = "No results.",
   className,
 }: DataTableProps<TData>) {
@@ -190,14 +209,20 @@ function DataTableInner<TData>({
     return Array.from(merged).sort((a, b) => a - b)
   }, [pageSizeOptions, initialPageSize])
 
+  const paginationParams = React.useMemo(
+    () => getPaginationParamNames(paginationNamespace),
+    [paginationNamespace]
+  )
+
   const pagination = React.useMemo(
     () =>
       getPaginationFromSearchParams(
         searchParams,
         resolvedPageSizeOptions,
-        initialPageSize
+        initialPageSize,
+        paginationNamespace
       ),
-    [searchParams, resolvedPageSizeOptions, initialPageSize]
+    [searchParams, resolvedPageSizeOptions, initialPageSize, paginationNamespace]
   )
 
   const activeFilters = React.useMemo(
@@ -213,12 +238,12 @@ function DataTableInner<TData>({
   const replacePagination = React.useCallback(
     (next: PaginationState) => {
       const params = new URLSearchParams(searchParams.toString())
-      params.set(PAGE_PARAM, String(next.pageIndex + 1))
-      params.set(LIMIT_PARAM, String(next.pageSize))
+      params.set(paginationParams.page, String(next.pageIndex + 1))
+      params.set(paginationParams.limit, String(next.pageSize))
       const qs = params.toString()
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams, paginationParams]
   )
 
   const setPagination = React.useCallback(
@@ -246,12 +271,12 @@ function DataTableInner<TData>({
           params.set(key, value.trim())
         }
       }
-      params.set(PAGE_PARAM, "1")
-      params.set(LIMIT_PARAM, String(pagination.pageSize))
+      params.set(paginationParams.page, "1")
+      params.set(paginationParams.limit, String(pagination.pageSize))
       const qs = params.toString()
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     },
-    [filterKeys, pathname, pagination.pageSize, router, searchParams]
+    [filterKeys, pathname, pagination.pageSize, router, searchParams, paginationParams]
   )
 
   const clearFilters = React.useCallback(() => {
@@ -260,11 +285,11 @@ function DataTableInner<TData>({
     for (const key of filterKeys) {
       params.delete(key)
     }
-    params.set(PAGE_PARAM, "1")
-    params.set(LIMIT_PARAM, String(pagination.pageSize))
+    params.set(paginationParams.page, "1")
+    params.set(paginationParams.limit, String(pagination.pageSize))
     const qs = params.toString()
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
-  }, [filterKeys, pathname, pagination.pageSize, router, searchParams])
+  }, [filterKeys, pathname, pagination.pageSize, router, searchParams, paginationParams])
 
   const { pageIndex, pageSize } = pagination
 

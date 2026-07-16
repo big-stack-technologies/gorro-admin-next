@@ -30,11 +30,12 @@ import {
   HandCoinsIcon,
   Layers3Icon,
   CircleDollarSignIcon,
+  BellRingIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-import { canManageClusters, isPartnerOnly } from "@/features/auth/access"
+import { canManageClusters, canManageReengagement, isPartnerOnly } from "@/features/auth/access"
 import { useGetProfile } from "@/features/auth/usecases"
 import { routes } from "@/lib/routes"
 
@@ -106,6 +107,11 @@ const data = {
           title: "Feature flags",
           url: routes.protected.featureFlags.base,
           icon: <FlagIcon />,
+        },
+        {
+          title: "Re-engagement",
+          url: routes.protected.reengagement.base,
+          icon: <BellRingIcon />,
         },
       ],
     },
@@ -207,6 +213,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: profile } = useGetProfile()
   const partnerOnly = isPartnerOnly(profile?.roles)
   const clustersAllowed = canManageClusters(profile?.roles)
+  const reengagementAllowed = canManageReengagement(profile?.roles)
 
   const navMain = data.navMain
     .map((section) => ({
@@ -218,6 +225,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           item.url === routes.protected.clusters.withdrawals
         ) {
           return clustersAllowed
+        }
+        if (item.url === routes.protected.reengagement.base) {
+          return reengagementAllowed
         }
         return true
       }),

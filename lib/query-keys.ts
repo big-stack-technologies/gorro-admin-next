@@ -94,4 +94,15 @@ export const QUERY_KEYS = {
     all: ["uploads"],
     presign: (fileUrl: string) => ["uploads", "presign", fileUrl] as const,
   },
+
+  reengagement: {
+    all: ["reengagement"] as const,
+    config: ["reengagement", "config"] as const,
+    segments: ["reengagement", "segments"] as const,
+    nudges: {
+      list: ["reengagement", "nudges", "list"] as const,
+    },
+    segmentUsers: (campaign: string) =>
+      ["reengagement", "segment-users", campaign, "list"] as const,
+  },
 } as const

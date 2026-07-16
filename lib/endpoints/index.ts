@@ -74,6 +74,12 @@ export const endpoints = {
     clustersAnalyticsTopByActivity: "/admin/clusters/analytics/top-by-activity",
     clustersAnalyticsWithdrawalVolume:
       "/admin/clusters/analytics/withdrawal-volume",
+    reengagementConfig: "/admin/reengagement/config",
+    reengagementRun: "/admin/reengagement/run",
+    reengagementNudges: "/admin/reengagement/nudges",
+    reengagementSegments: "/admin/reengagement/segments",
+    reengagementSegmentUsers: (campaign: string) =>
+      `/admin/reengagement/segments/${encodeURIComponent(campaign)}/users`,
   },
   uploads: {
     file: "/uploads/file",
