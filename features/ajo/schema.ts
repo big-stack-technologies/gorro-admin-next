@@ -36,20 +36,45 @@ export const updateAjoConfigFormSchema = z.object({
 
 export type UpdateAjoConfigFormValues = z.infer<typeof updateAjoConfigFormSchema>
 
-export const createAjoGroupFormSchema = z.object({
-  name: z.string().min(1, "Group name is required"),
-  contributionAmount: z
-    .number()
-    .min(1, "Contribution amount is required")
-    .int("Must be a whole naira amount"),
-  frequency: z.enum(AJO_FREQUENCIES),
-  startDate: z.string().min(1, "Start date is required"),
-  slotCount: z
-    .number()
-    .int("Must be a whole number")
-    .min(2, "Must have at least 2 slots"),
-  description: z.string().optional(),
-  imageUrl: z.string().optional(),
-})
+export const createAjoGroupFormSchema = z
+  .object({
+    name: z.string().min(1, "Group name is required"),
+    contributionAmount: z
+      .number()
+      .min(1, "Contribution amount is required")
+      .int("Must be a whole naira amount"),
+    frequency: z.enum(AJO_FREQUENCIES),
+    contributionDayOfWeek: z.number().int().min(1).max(7).optional(),
+    payoutDayOfWeek: z.number().int().min(1).max(7).optional(),
+    startDate: z.string().min(1, "Start date is required"),
+    slotCount: z
+      .number()
+      .int("Must be a whole number")
+      .min(2, "Must have at least 2 slots"),
+    description: z.string().optional(),
+    imageUrl: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.frequency !== "WEEKLY") return
+
+    if (
+      data.contributionDayOfWeek == null ||
+      Number.isNaN(data.contributionDayOfWeek)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Contribution day is required for weekly groups",
+        path: ["contributionDayOfWeek"],
+      })
+    }
+
+    if (data.payoutDayOfWeek == null || Number.isNaN(data.payoutDayOfWeek)) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Payout day is required for weekly groups",
+        path: ["payoutDayOfWeek"],
+      })
+    }
+  })
 
 export type CreateAjoGroupFormValues = z.infer<typeof createAjoGroupFormSchema>

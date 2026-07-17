@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useGetProfile } from "@/features/auth/usecases"
-import { AJO_FREQUENCY_OPTIONS } from "@/features/ajo/constants"
+import { AJO_FREQUENCY_OPTIONS, AJO_WEEKDAY_OPTIONS } from "@/features/ajo/constants"
 import {
   createAjoGroupFormSchema,
   type CreateAjoGroupFormValues,
@@ -83,6 +83,8 @@ export function CreateAjoGroupForm() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const imageUrl = watch("imageUrl")
+  const frequency = watch("frequency")
+  const isWeekly = frequency === "WEEKLY"
 
   if (!isSuperAdmin) {
     return (
@@ -106,6 +108,10 @@ export function CreateAjoGroupForm() {
         frequency: values.frequency,
         startDate: values.startDate,
         slotCount: values.slotCount,
+        ...(values.frequency === "WEEKLY" && {
+          contributionDayOfWeek: values.contributionDayOfWeek,
+          payoutDayOfWeek: values.payoutDayOfWeek,
+        }),
         description: values.description?.trim() || undefined,
         imageUrl: values.imageUrl?.trim() || undefined,
       },
@@ -202,7 +208,20 @@ export function CreateAjoGroupForm() {
                 name="frequency"
                 control={control}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value)
+                      if (value !== "WEEKLY") {
+                        setValue("contributionDayOfWeek", undefined, {
+                          shouldValidate: true,
+                        })
+                        setValue("payoutDayOfWeek", undefined, {
+                          shouldValidate: true,
+                        })
+                      }
+                    }}
+                  >
                     <SelectTrigger
                       id="ajo-frequency"
                       className="w-full min-w-0"
@@ -222,6 +241,84 @@ export function CreateAjoGroupForm() {
               />
               <FieldError errors={[errors.frequency]} />
             </Field>
+
+            {isWeekly ? (
+              <>
+                <Field
+                  data-invalid={errors.contributionDayOfWeek ? true : undefined}
+                >
+                  <FieldLabel htmlFor="ajo-contribution-day">
+                    Contribution day
+                  </FieldLabel>
+                  <Controller
+                    name="contributionDayOfWeek"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={
+                          field.value != null ? String(field.value) : undefined
+                        }
+                        onValueChange={(value) =>
+                          field.onChange(Number(value))
+                        }
+                      >
+                        <SelectTrigger
+                          id="ajo-contribution-day"
+                          className="w-full min-w-0"
+                          aria-invalid={!!errors.contributionDayOfWeek}
+                        >
+                          <SelectValue placeholder="Select contribution day" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AJO_WEEKDAY_OPTIONS.map(({ value, label }) => (
+                            <SelectItem key={value} value={String(value)}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  <FieldError errors={[errors.contributionDayOfWeek]} />
+                </Field>
+
+                <Field
+                  data-invalid={errors.payoutDayOfWeek ? true : undefined}
+                >
+                  <FieldLabel htmlFor="ajo-payout-day">Payout day</FieldLabel>
+                  <Controller
+                    name="payoutDayOfWeek"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={
+                          field.value != null ? String(field.value) : undefined
+                        }
+                        onValueChange={(value) =>
+                          field.onChange(Number(value))
+                        }
+                      >
+                        <SelectTrigger
+                          id="ajo-payout-day"
+                          className="w-full min-w-0"
+                          aria-invalid={!!errors.payoutDayOfWeek}
+                        >
+                          <SelectValue placeholder="Select payout day" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AJO_WEEKDAY_OPTIONS.map(({ value, label }) => (
+                            <SelectItem key={value} value={String(value)}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  <FieldError errors={[errors.payoutDayOfWeek]} />
+                </Field>
+              </>
+            ) : null}
 
             <Field data-invalid={errors.startDate ? true : undefined}>
               <FieldLabel htmlFor="ajo-start-date">Start date</FieldLabel>

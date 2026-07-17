@@ -48,6 +48,8 @@ export type CreateAjoGroupPayload = {
   frequency: AjoFrequency
   startDate: string
   slotCount: number
+  contributionDayOfWeek?: number
+  payoutDayOfWeek?: number
   perMemberSlotCap?: number
   imageUrl?: string
   description?: string
