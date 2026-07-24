@@ -1,4 +1,5 @@
 import type {
+  ReengagementAudience,
   ReengagementCampaign,
   ReengagementChannel,
 } from "@/features/reengagement/types"
@@ -50,3 +51,29 @@ export const REENGAGEMENT_CHANNEL_OPTIONS = REENGAGEMENT_CHANNELS.map(
     label: REENGAGEMENT_CHANNEL_LABELS[value],
   })
 )
+
+export const REENGAGEMENT_AUDIENCES = [
+  "ALL",
+  "VERIFIED",
+  "UNVERIFIED",
+] as const satisfies readonly ReengagementAudience[]
+
+export const REENGAGEMENT_AUDIENCE_LABELS: Record<
+  ReengagementAudience,
+  string
+> = {
+  ALL: "All users",
+  VERIFIED: "Verified (KYC > 0)",
+  UNVERIFIED: "Unverified (KYC 0)",
+}
+
+export const REENGAGEMENT_AUDIENCE_OPTIONS = REENGAGEMENT_AUDIENCES.map(
+  (value) => ({
+    value,
+    label: REENGAGEMENT_AUDIENCE_LABELS[value],
+  })
+)
+
+export function getReengagementAudienceLabel(audience: ReengagementAudience) {
+  return REENGAGEMENT_AUDIENCE_LABELS[audience]
+}

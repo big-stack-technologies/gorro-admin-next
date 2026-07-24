@@ -79,3 +79,32 @@ export type ReengagementApiPaginatedResponse<T> = {
   limit: number
   hasMore?: boolean
 }
+
+export type ReengagementAudience = "ALL" | "VERIFIED" | "UNVERIFIED"
+
+export type BroadcastReengagementPayload = {
+  title: string
+  body: string
+  audience?: ReengagementAudience
+  email?: string
+}
+
+export type BroadcastReengagementResponse = {
+  audience: string
+  recipients: number
+  title: string
+  body: string
+}
+
+export type SendReengagementEmailPayload = {
+  subject: string
+  body: string
+  emails?: string[]
+  audience?: ReengagementAudience
+}
+
+export type SendReengagementEmailResponse = {
+  recipients: number
+  estimatedSeconds: number
+  notFound?: string[]
+}

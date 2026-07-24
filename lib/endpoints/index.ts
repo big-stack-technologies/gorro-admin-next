@@ -84,6 +84,8 @@ export const endpoints = {
     reengagementSegments: "/admin/reengagement/segments",
     reengagementSegmentUsers: (campaign: string) =>
       `/admin/reengagement/segments/${encodeURIComponent(campaign)}/users`,
+    reengagementBroadcast: "/admin/reengagement/broadcast",
+    reengagementEmail: "/admin/reengagement/email",
   },
   uploads: {
     file: "/uploads/file",
