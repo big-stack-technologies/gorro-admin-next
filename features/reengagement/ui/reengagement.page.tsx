@@ -12,6 +12,7 @@ import { listReengagementNudgesAction } from "@/features/reengagement/actions"
 import { reengagementNudgesColumns } from "@/features/reengagement/columns"
 import { reengagementNudgesTableFilters } from "@/features/reengagement/table-filters"
 import { ReengagementConfigSection } from "@/features/reengagement/ui/reengagement-config-section"
+import { ReengagementMessagingSection } from "@/features/reengagement/ui/reengagement-messaging-section"
 import { ReengagementSegmentsSection } from "@/features/reengagement/ui/reengagement-segments-section"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
@@ -20,7 +21,7 @@ export function ReengagementPage() {
     <div className="flex flex-col gap-8 px-4 pb-8 lg:px-6">
       <AdminPageHeader
         title="Re-engagement"
-        description="Manage automated push nudges, review live segments, and inspect send history."
+        description="Manage automated push nudges, send broadcasts and emails, review segments, and inspect send history."
       />
 
       <Tabs defaultValue="segments" className="gap-6">
@@ -30,6 +31,9 @@ export function ReengagementPage() {
           </TabsTrigger>
           <TabsTrigger value="history" className="flex-none text-xs sm:text-sm">
             History
+          </TabsTrigger>
+          <TabsTrigger value="messaging" className="flex-none text-xs sm:text-sm">
+            Messaging
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex-none text-xs sm:text-sm">
             Settings
@@ -49,6 +53,10 @@ export function ReengagementPage() {
             filters={reengagementNudgesTableFilters}
             emptyMessage="No nudges match these filters."
           />
+        </TabsContent>
+
+        <TabsContent value="messaging" className="mt-0">
+          <ReengagementMessagingSection />
         </TabsContent>
 
         <TabsContent value="settings" className="mt-0">
