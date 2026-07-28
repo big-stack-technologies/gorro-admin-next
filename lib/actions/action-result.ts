@@ -1,4 +1,5 @@
 import {
+  ApiRequestError,
   getApiErrorMessage,
   getApiErrorStatus,
 } from "@/lib/api/api-error"
@@ -20,7 +21,7 @@ export function actionFailure(
 
 export function unwrapActionResult<T>(result: ActionResult<T>): T {
   if (!result.success) {
-    throw new Error(result.error)
+    throw new ApiRequestError(result.error, result.status)
   }
   return result.data
 }

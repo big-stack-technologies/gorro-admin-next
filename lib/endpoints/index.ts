@@ -95,4 +95,7 @@ export const endpoints = {
     mainByUserId: (userId: string) =>
       `/wallet/main/${encodeURIComponent(userId)}`,
   },
+  accountProviders: {
+    fincraBvnResolution: "/account-providers/fincra/resolution/bvn",
+  },
 } as const

@@ -55,13 +55,18 @@ apiClient.interceptors.response.use(
       status,
     }
 
+    const isTimeout =
+      error.code === "ECONNABORTED" || /timeout/i.test(error.message)
+
     if (error.response) {
       apiError.message =
         (error.response.data as { message?: string })?.message ||
         error.message ||
         `Request failed with status ${error.response.status}`
     } else if (error.request) {
-      apiError.message = "No response received from server"
+      apiError.message = isTimeout
+        ? error.message || "Request timed out"
+        : "No response received from server"
     }
 
     if (status === 401 && !isLoginRequest && !isLogoutRequest) {

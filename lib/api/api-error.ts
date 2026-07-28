@@ -41,3 +41,10 @@ export function getApiErrorStatus(error: unknown): number | undefined {
   if (isApiError(error)) return error.status
   return undefined
 }
+
+export function isApiTimeoutError(error: unknown): boolean {
+  const status = getApiErrorStatus(error)
+  if (status === 408 || status === 504) return true
+
+  return /timeout/i.test(getApiErrorMessage(error))
+}
