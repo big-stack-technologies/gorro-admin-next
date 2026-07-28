@@ -22,7 +22,7 @@ import {
 } from "@/features/users/schema"
 import type { User, VerifyUserBvnData } from "@/features/users/types"
 import { useVerifyUserBvn } from "@/features/users/usecases"
-import { cn, joinPartsOrEmDash } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 type UserBvnVerificationPanelProps = {
   user: User
@@ -54,14 +54,16 @@ function BvnVerificationResult({ data }: { data: VerifyUserBvnData }) {
 
       <dl className="grid gap-2 text-sm">
         <div className="grid grid-cols-[120px_1fr] gap-x-3">
-          <dt className="text-muted-foreground">Name</dt>
-          <dd className="font-medium">
-            {joinPartsOrEmDash([
-              response.firstName,
-              response.middleName,
-              response.lastName,
-            ])}
-          </dd>
+          <dt className="text-muted-foreground">First name</dt>
+          <dd className="font-medium">{response.firstName || "—"}</dd>
+        </div>
+        <div className="grid grid-cols-[120px_1fr] gap-x-3">
+          <dt className="text-muted-foreground">Middle name</dt>
+          <dd className="font-medium">{response.middleName || "—"}</dd>
+        </div>
+        <div className="grid grid-cols-[120px_1fr] gap-x-3">
+          <dt className="text-muted-foreground">Last name</dt>
+          <dd className="font-medium">{response.lastName || "—"}</dd>
         </div>
         <div className="grid grid-cols-[120px_1fr] gap-x-3">
           <dt className="text-muted-foreground">BVN</dt>

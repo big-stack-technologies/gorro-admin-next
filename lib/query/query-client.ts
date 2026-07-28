@@ -1,7 +1,17 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
 
-import { ApiRequestError, isApiError } from "@/lib/api/api-error"
+import { ApiRequestError, getApiErrorMessage, isApiError } from "@/lib/api/api-error"
 import { routes } from "@/lib/routes"
+
+/** Next.js replaces server-action 401 failures with this opaque client error. */
+const SERVER_ACTION_UNEXPECTED_RESPONSE =
+  "An unexpected response was received from the server."
+
+function isServerActionSessionFailure(error: unknown): boolean {
+  if (typeof window === "undefined") return false
+  if (getApiErrorMessage(error) !== SERVER_ACTION_UNEXPECTED_RESPONSE) return false
+  return window.location.pathname.startsWith(routes.protected.admin.base)
+}
 
 function isUnauthorizedError(error: unknown): boolean {
   if (error instanceof ApiRequestError && error.status === 401) return true
@@ -15,6 +25,7 @@ function isUnauthorizedError(error: unknown): boolean {
   ) {
     return true
   }
+  if (isServerActionSessionFailure(error)) return true
   return false
 }
 
