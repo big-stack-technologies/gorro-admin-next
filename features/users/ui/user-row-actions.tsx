@@ -17,9 +17,11 @@ import {
   type DataTableRowActionGroup,
 } from "@/components/data-table"
 import { useGetProfile } from "@/features/auth/usecases"
+import { canVerifyBvn } from "@/features/auth/access"
 import { USER_ROLE } from "@/features/users/constants"
 import type { User } from "@/features/users/types"
 
+import { UserBvnVerificationDialog } from "./user-bvn-verification-dialog"
 import { UserChangeRoleDialog } from "./user-change-role-dialog"
 import { UserDetailsDialog } from "./user-details-dialog"
 import { UserDisableWithdrawalsDialog } from "./user-disable-withdrawals-dialog"
@@ -30,6 +32,7 @@ import { UserUpdateDialog } from "./user-update-dialog"
 
 type UserRowActionGroupsParams = {
   isSuperAdmin: boolean
+  canVerify: boolean
   withdrawalsDisabled: boolean
   onViewUser: () => void
   onUpdateUser: () => void
@@ -38,6 +41,7 @@ type UserRowActionGroupsParams = {
   onResetPin: () => void
   onDisableWithdrawals: () => void
   onEnableWithdrawals: () => void
+  onVerifyBvn: () => void
 }
 
 function useUserRowActionGroups(
@@ -45,6 +49,7 @@ function useUserRowActionGroups(
 ): DataTableRowActionGroup[] {
   const {
     isSuperAdmin,
+    canVerify,
     withdrawalsDisabled,
     onViewUser,
     onUpdateUser,
@@ -53,6 +58,7 @@ function useUserRowActionGroups(
     onResetPin,
     onDisableWithdrawals,
     onEnableWithdrawals,
+    onVerifyBvn,
   } = params
 
   return useMemo(
@@ -120,19 +126,22 @@ function useUserRowActionGroups(
                     ]),
               ]
             : []),
-          {
-            id: "kyc",
-            label: "Verify KYC status",
-            icon: ShieldCheckIcon,
-            onSelect: () => {
-              /* TODO: verify KYC status */
-            },
-          },
+          ...(canVerify
+            ? [
+                {
+                  id: "verify-bvn",
+                  label: "Verify BVN",
+                  icon: ShieldCheckIcon,
+                  onSelect: onVerifyBvn,
+                },
+              ]
+            : []),
         ],
       },
     ],
     [
       isSuperAdmin,
+      canVerify,
       withdrawalsDisabled,
       onViewUser,
       onUpdateUser,
@@ -141,6 +150,7 @@ function useUserRowActionGroups(
       onResetPin,
       onDisableWithdrawals,
       onEnableWithdrawals,
+      onVerifyBvn,
     ]
   )
 }
@@ -153,6 +163,7 @@ export function UserRowActions({ user }: UserRowActionsProps) {
   const { data: profile } = useGetProfile()
   const isSuperAdmin =
     profile?.roles?.includes(USER_ROLE.super_admin) === true
+  const canVerify = canVerifyBvn(profile?.roles)
 
   const [viewOpen, setViewOpen] = useState(false)
   const [updateOpen, setUpdateOpen] = useState(false)
@@ -161,6 +172,7 @@ export function UserRowActions({ user }: UserRowActionsProps) {
   const [resetPinOpen, setResetPinOpen] = useState(false)
   const [disableWithdrawalsOpen, setDisableWithdrawalsOpen] = useState(false)
   const [enableWithdrawalsOpen, setEnableWithdrawalsOpen] = useState(false)
+  const [verifyBvnOpen, setVerifyBvnOpen] = useState(false)
 
   const openActions = useMemo(
     () => ({
@@ -171,12 +183,14 @@ export function UserRowActions({ user }: UserRowActionsProps) {
       onResetPin: () => setResetPinOpen(true),
       onDisableWithdrawals: () => setDisableWithdrawalsOpen(true),
       onEnableWithdrawals: () => setEnableWithdrawalsOpen(true),
+      onVerifyBvn: () => setVerifyBvnOpen(true),
     }),
     []
   )
 
   const groups = useUserRowActionGroups({
     isSuperAdmin,
+    canVerify,
     withdrawalsDisabled: user.withdrawalsDisabled,
     ...openActions,
   })
@@ -222,6 +236,14 @@ export function UserRowActions({ user }: UserRowActionsProps) {
             />
           ) : null}
         </>
+      ) : null}
+      {canVerify ? (
+        <UserBvnVerificationDialog
+          user={user}
+          open={verifyBvnOpen}
+          onOpenChange={setVerifyBvnOpen}
+          canVerify={canVerify}
+        />
       ) : null}
     </>
   )

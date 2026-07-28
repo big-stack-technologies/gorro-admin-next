@@ -44,3 +44,29 @@ export type UserKycTierBreakdown = {
 }
 
 export type UsersByTierApiEnvelope = AnalyticsApiEnvelope<UserKycTierBreakdown[]>
+
+export type VerifyUserBvnPayload = {
+  bvn: string
+}
+
+export type BvnResolutionDetails = {
+  bvn: string
+  firstName: string
+  lastName: string
+  middleName: string
+  gender: string
+  dateOfBirth: string
+  phoneNo: string
+  pixBase64?: string
+}
+
+export type VerifyUserBvnData = {
+  verificationStatus: string
+  response: BvnResolutionDetails
+}
+
+export type VerifyUserBvnResponse = {
+  success: boolean
+  data: VerifyUserBvnData
+  message: string
+}

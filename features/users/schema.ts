@@ -43,3 +43,9 @@ export type WithdrawalsReasonFormValues = z.infer<
 >
 
 export type WithdrawalsReasonPayload = WithdrawalsReasonFormValues
+
+export const verifyUserBvnFormSchema = z.object({
+  bvn: z.string().regex(/^\d{11}$/, "BVN must be exactly 11 digits"),
+})
+
+export type VerifyUserBvnFormValues = z.infer<typeof verifyUserBvnFormSchema>

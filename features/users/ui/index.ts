@@ -1,3 +1,5 @@
+export * from "./user-bvn-verification-dialog"
+export * from "./user-bvn-verification-panel"
 export * from "./user-change-role-dialog"
 export * from "./user-details-dialog"
 export * from "./user-disable-withdrawals-dialog"

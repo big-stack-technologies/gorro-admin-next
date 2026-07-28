@@ -12,7 +12,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
+import { canVerifyBvn } from "@/features/auth/access"
+import { useGetProfile } from "@/features/auth/usecases"
 import type { User } from "@/features/users/types"
+import { UserBvnVerificationPanel } from "@/features/users/ui/user-bvn-verification-panel"
 import { UserWalletBalancePopover } from "@/features/users/ui/user-wallet-balance-popover"
 import { useGetUser } from "@/features/users/usecases"
 import { isApiError } from "@/lib/api/api-error"
@@ -65,6 +68,9 @@ export function UserDetailsDialog({
   open,
   onOpenChange,
 }: UserDetailsDialogProps) {
+  const { data: profile } = useGetProfile()
+  const canVerify = canVerifyBvn(profile?.roles)
+
   const userQuery = useGetUser(user.id, open)
   const {
     data: userDetail,
@@ -113,6 +119,14 @@ export function UserDetailsDialog({
             <DetailRow label="Role" value={formatSnakeCaseWords(user.role)} />
             <DetailRow label="NIN" value={user.nin ?? "—"} />
             <DetailRow label="BVN" value={user.bvn ?? "—"} />
+          </dl>
+
+          <div className="border-t border-border/60 py-4">
+            <h3 className="mb-3 text-sm font-semibold">Identity verification</h3>
+            <UserBvnVerificationPanel user={user} canVerify={canVerify} />
+          </div>
+
+          <dl className="py-2">
             <DetailRow
               label="Accounts"
               value={

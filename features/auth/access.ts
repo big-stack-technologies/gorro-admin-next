@@ -28,6 +28,10 @@ export function canManageReengagement(roles?: string[]): boolean {
   return canManageClusters(roles)
 }
 
+export function canVerifyBvn(roles?: string[]): boolean {
+  return canManageClusters(roles)
+}
+
 function isClusterAdminPath(pathname: string): boolean {
   const base = routes.protected.clusters.base
   return pathname === base || pathname.startsWith(`${base}/`)
