@@ -15,7 +15,7 @@ export function normalizeNinReviewPagination(
     meta: {
       total: response.total,
       page: response.page,
-      limit: response.limit,
+      limit,
       totalPages,
       hasNextPage: response.page < totalPages,
       hasPreviousPage: response.page > 1,
