@@ -39,6 +39,8 @@ export type DataTableFilterField =
     options: readonly { value: string; label: string }[]
     /** Label for the “no filter” option (omits param from URL). */
     emptyLabel?: string
+    /** When false, the empty option is omitted and a value must always be selected. */
+    clearable?: boolean
   }
   | {
     type: "number"
@@ -251,9 +253,11 @@ export function DataTableFilterBar({
                     <SelectValue placeholder={field.placeholder ?? field.label} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={SELECT_EMPTY}>
-                      {field.emptyLabel ?? "Any"}
-                    </SelectItem>
+                    {field.clearable !== false ? (
+                      <SelectItem value={SELECT_EMPTY}>
+                        {field.emptyLabel ?? "Any"}
+                      </SelectItem>
+                    ) : null}
                     {field.options.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}

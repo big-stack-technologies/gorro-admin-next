@@ -19,6 +19,7 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
   const featureFlags = routes.protected.featureFlags.base
   const ajo = routes.protected.ajo.base
   const reengagement = routes.protected.reengagement.base
+  const kycNinReviews = routes.protected.kycNinReviews.base
 
   const normalized =
     pathname.length > 1 && pathname.endsWith("/")
@@ -122,6 +123,21 @@ export function getAdminBreadcrumbSegments(pathname: string): BreadcrumbSegment[
     return [
       { label: "Dashboard", href: admin },
       { label: "Re-engagement" },
+    ]
+  }
+
+  if (normalized === kycNinReviews) {
+    return [
+      { label: "Dashboard", href: admin },
+      { label: "NIN reviews" },
+    ]
+  }
+
+  if (normalized.startsWith(`${kycNinReviews}/`)) {
+    return [
+      { label: "Dashboard", href: admin },
+      { label: "NIN reviews", href: kycNinReviews },
+      { label: "Review details" },
     ]
   }
 

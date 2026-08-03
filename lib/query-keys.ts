@@ -109,4 +109,10 @@ export const QUERY_KEYS = {
     segmentUsers: (campaign: string) =>
       ["reengagement", "segment-users", campaign, "list"] as const,
   },
+
+  kycReviews: {
+    all: ["kyc-reviews"] as const,
+    ninList: ["kyc-reviews", "nin", "list"] as const,
+    ninDetail: (id: string) => ["kyc-reviews", "nin", "detail", id] as const,
+  },
 } as const

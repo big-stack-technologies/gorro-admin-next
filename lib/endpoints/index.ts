@@ -86,6 +86,13 @@ export const endpoints = {
       `/admin/reengagement/segments/${encodeURIComponent(campaign)}/users`,
     reengagementBroadcast: "/admin/reengagement/broadcast",
     reengagementEmail: "/admin/reengagement/email",
+    kycNinReviews: "/admin/kyc/nin-reviews",
+    kycNinReviewById: (id: string) =>
+      `/admin/kyc/nin-reviews/${encodeURIComponent(id)}`,
+    kycNinReviewApproveById: (id: string) =>
+      `/admin/kyc/nin-reviews/${encodeURIComponent(id)}/approve`,
+    kycNinReviewRejectById: (id: string) =>
+      `/admin/kyc/nin-reviews/${encodeURIComponent(id)}/reject`,
   },
   uploads: {
     file: "/uploads/file",

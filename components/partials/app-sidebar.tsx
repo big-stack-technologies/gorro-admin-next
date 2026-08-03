@@ -31,6 +31,7 @@ import {
   Layers3Icon,
   CircleDollarSignIcon,
   BellRingIcon,
+  IdCardIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -67,6 +68,11 @@ const data = {
           title: "Withdrawal requests",
           url: routes.protected.withdrawalRequests.base,
           icon: <BanknoteIcon />,
+        },
+        {
+          title: "NIN reviews",
+          url: routes.protected.kycNinReviews.base,
+          icon: <IdCardIcon />,
         },
         {
           title: "Cluster withdrawals",
