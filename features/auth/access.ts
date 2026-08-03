@@ -32,6 +32,15 @@ export function canVerifyBvn(roles?: string[]): boolean {
   return canManageClusters(roles)
 }
 
+/** Decide NIN reviews: super_admin or support_agent. Moderator is view-only. */
+export function canDecideNinReview(roles?: string[]): boolean {
+  if (!roles?.length) return false
+  return (
+    roles.includes(USER_ROLE.super_admin) ||
+    roles.includes(USER_ROLE.support_agent)
+  )
+}
+
 function isClusterAdminPath(pathname: string): boolean {
   const base = routes.protected.clusters.base
   return pathname === base || pathname.startsWith(`${base}/`)

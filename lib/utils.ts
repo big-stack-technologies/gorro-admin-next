@@ -24,6 +24,19 @@ export function formatDateTime(iso: string) {
   }
 }
 
+/** Formats an ISO date in UTC so calendar dates are not shifted by local timezone. */
+export function formatUtcDate(iso: string | null | undefined) {
+  if (iso == null || String(iso).trim() === "") return "—"
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeZone: "UTC",
+    }).format(new Date(iso))
+  } catch {
+    return iso
+  }
+}
+
 /** Joins non-empty parts with spaces; returns an em dash if none. */
 export function joinPartsOrEmDash(parts: (string | null | undefined)[]) {
   const joined = parts.filter(Boolean).join(" ")

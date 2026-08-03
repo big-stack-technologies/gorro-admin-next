@@ -68,6 +68,11 @@ export type DataTableProps<TData> = {
    */
   filters?: readonly DataTableFilterField[]
   /**
+   * Fallback filter values when a param is absent from the URL.
+   * Used for fetch params and filter bar display; `clearFilters` resets here.
+   */
+  defaultFilters?: Record<string, string>
+  /**
    * Optional namespace for URL pagination params (`{namespace}_page`, `{namespace}_limit`).
    * Use when multiple DataTables share one route.
    */
@@ -124,7 +129,8 @@ function getPaginationFromSearchParams(
 
 function getActiveFiltersFromSearchParams(
   searchParams: URLSearchParams,
-  filterKeys: readonly string[] | undefined
+  filterKeys: readonly string[] | undefined,
+  defaultFilters?: Record<string, string>
 ): Record<string, string> {
   if (!filterKeys?.length) return {}
   const out: Record<string, string> = {}
@@ -132,6 +138,8 @@ function getActiveFiltersFromSearchParams(
     const raw = searchParams.get(key)
     if (raw != null && raw.trim() !== "") {
       out[key] = raw.trim()
+    } else if (defaultFilters?.[key]?.trim()) {
+      out[key] = defaultFilters[key].trim()
     }
   }
   return out
@@ -191,6 +199,7 @@ function DataTableInner<TData>({
   initialPageSize = DEFAULT_PAGE_SIZE,
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   filters,
+  defaultFilters,
   paginationNamespace,
   emptyMessage = "No results.",
   className,
@@ -226,8 +235,13 @@ function DataTableInner<TData>({
   )
 
   const activeFilters = React.useMemo(
-    () => getActiveFiltersFromSearchParams(searchParams, filterKeys),
-    [searchParams, filterKeys]
+    () =>
+      getActiveFiltersFromSearchParams(
+        searchParams,
+        filterKeys,
+        defaultFilters
+      ),
+    [searchParams, filterKeys, defaultFilters]
   )
 
   const filtersKey = React.useMemo(
@@ -283,13 +297,26 @@ function DataTableInner<TData>({
     if (filterKeys.length === 0) return
     const params = new URLSearchParams(searchParams.toString())
     for (const key of filterKeys) {
-      params.delete(key)
+      const fallback = defaultFilters?.[key]?.trim()
+      if (fallback) {
+        params.set(key, fallback)
+      } else {
+        params.delete(key)
+      }
     }
     params.set(paginationParams.page, "1")
     params.set(paginationParams.limit, String(pagination.pageSize))
     const qs = params.toString()
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
-  }, [filterKeys, pathname, pagination.pageSize, router, searchParams, paginationParams])
+  }, [
+    defaultFilters,
+    filterKeys,
+    pathname,
+    pagination.pageSize,
+    router,
+    searchParams,
+    paginationParams,
+  ])
 
   const { pageIndex, pageSize } = pagination
 

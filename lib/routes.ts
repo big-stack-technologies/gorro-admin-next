@@ -52,6 +52,11 @@ export const routes = {
     reengagement: {
       base: "/admin/reengagement",
     },
+    kycNinReviews: {
+      base: "/admin/kyc/nin-reviews",
+      detail: (id: string) =>
+        `/admin/kyc/nin-reviews/${encodeURIComponent(id)}`,
+    },
   },
 } as const
 
