@@ -287,7 +287,12 @@ export function AjoGroupDetailPage({ groupId }: { groupId: string }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <AjoMembersTable members={group.members} />
+              <AjoMembersTable
+                groupId={group.id}
+                groupStatus={group.status}
+                members={group.members}
+                canRemove={isSuperAdmin}
+              />
             </CardContent>
           </Card>
         </TabsContent>
