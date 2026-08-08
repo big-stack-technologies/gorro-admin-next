@@ -62,6 +62,8 @@ export const endpoints = {
       `/admin/ajo/groups/${encodeURIComponent(id)}`,
     ajoGroupClose: (id: string) =>
       `/admin/ajo/groups/${encodeURIComponent(id)}/close`,
+    ajoGroupMemberRemove: (id: string, memberId: string) =>
+      `/admin/ajo/groups/${encodeURIComponent(id)}/members/${encodeURIComponent(memberId)}/remove`,
     clusters: "/admin/clusters",
     clusterById: (id: string) => `/admin/clusters/${encodeURIComponent(id)}`,
     clusterMembersById: (id: string) =>
