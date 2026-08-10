@@ -5,6 +5,8 @@ import { toast } from "sonner"
 
 import { rejectClusterWithdrawalAction } from "@/features/clusters/actions"
 import type { RejectClusterWithdrawalPayload } from "@/features/clusters/schema"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useRejectClusterWithdrawal(
@@ -14,8 +16,10 @@ export function useRejectClusterWithdrawal(
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: RejectClusterWithdrawalPayload) =>
-      rejectClusterWithdrawalAction(clusterId, requestId, payload),
+    mutationFn: async (payload: RejectClusterWithdrawalPayload) =>
+      unwrapActionResult(
+        await rejectClusterWithdrawalAction(clusterId, requestId, payload)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.clusters.withdrawals.all,
@@ -29,9 +33,8 @@ export function useRejectClusterWithdrawal(
       toast.success("Withdrawal rejected")
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Could not reject withdrawal"
-      )
+      toast.error(getApiErrorMessage(error))
+      console.error("Reject cluster withdrawal error:", error)
     },
   })
 }

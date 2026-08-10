@@ -5,14 +5,16 @@ import { toast } from "sonner"
 
 import { updateClusterAction } from "@/features/clusters/actions"
 import type { UpdateClusterPayload } from "@/features/clusters/schema"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useUpdateCluster(clusterId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: UpdateClusterPayload) =>
-      updateClusterAction(clusterId, payload),
+    mutationFn: async (payload: UpdateClusterPayload) =>
+      unwrapActionResult(await updateClusterAction(clusterId, payload)),
     onSuccess: (cluster) => {
       queryClient.setQueryData(QUERY_KEYS.clusters.detail(clusterId), cluster)
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.clusters.list })
@@ -22,9 +24,8 @@ export function useUpdateCluster(clusterId: string) {
       toast.success("Cluster updated")
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Could not update cluster"
-      )
+      toast.error(getApiErrorMessage(error))
+      console.error("Update cluster error:", error)
     },
   })
 }

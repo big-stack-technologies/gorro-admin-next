@@ -4,12 +4,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { approveWithdrawalRequestAction } from "@/features/withdrawal-requests/actions"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useApproveWithdrawalRequest(withdrawalRequestId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => approveWithdrawalRequestAction(withdrawalRequestId),
+    mutationFn: async () =>
+      unwrapActionResult(
+        await approveWithdrawalRequestAction(withdrawalRequestId)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.withdrawalRequests.list,
@@ -19,10 +24,9 @@ export function useApproveWithdrawalRequest(withdrawalRequestId: string) {
       })
       toast.success("Withdrawal request approved")
     },
-    onError: (e) => {
-      toast.error(
-        e instanceof Error ? e.message : "Could not approve withdrawal request"
-      )
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Approve withdrawal request error:", error)
     },
   })
 }

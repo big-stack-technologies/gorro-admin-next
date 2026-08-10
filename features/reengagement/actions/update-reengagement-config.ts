@@ -1,18 +1,25 @@
 "use server"
 
-import { patch } from "@/lib/api/axios"
-import { endpoints } from "@/lib/endpoints"
 import type {
   ReengagementConfig,
   UpdateReengagementConfigPayload,
 } from "@/features/reengagement/types"
+import type { ActionResult } from "@/lib/actions/action-result"
+import { actionFailure } from "@/lib/actions/action-result"
+import { patch } from "@/lib/api/axios"
+import { endpoints } from "@/lib/endpoints"
 
 export async function updateReengagementConfigAction(
   payload: UpdateReengagementConfigPayload
-): Promise<ReengagementConfig> {
-  const { data } = await patch<ReengagementConfig>(
-    endpoints.admin.reengagementConfig,
-    payload
-  )
-  return data
+): Promise<ActionResult<ReengagementConfig>> {
+  try {
+    const { data } = await patch<ReengagementConfig>(
+      endpoints.admin.reengagementConfig,
+      payload
+    )
+    return { success: true, data }
+  } catch (error) {
+    console.error("Update re-engagement config action failed:", error)
+    return actionFailure(error, "Could not update re-engagement settings")
+  }
 }

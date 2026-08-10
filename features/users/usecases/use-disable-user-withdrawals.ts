@@ -5,13 +5,17 @@ import { toast } from "sonner"
 
 import { disableUserWithdrawalsAction } from "@/features/users/actions"
 import type { WithdrawalsReasonFormValues } from "@/features/users/schema"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useDisableUserWithdrawals(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (values: WithdrawalsReasonFormValues) =>
-      disableUserWithdrawalsAction(userId, values),
+    mutationFn: async (values: WithdrawalsReasonFormValues) =>
+      unwrapActionResult(
+        await disableUserWithdrawalsAction(userId, values)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.list })
       queryClient.invalidateQueries({
@@ -19,10 +23,9 @@ export function useDisableUserWithdrawals(userId: string) {
       })
       toast.success("Withdrawals disabled")
     },
-    onError: (e) => {
-      toast.error(
-        e instanceof Error ? e.message : "Could not disable withdrawals"
-      )
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Disable user withdrawals error:", error)
     },
   })
 }

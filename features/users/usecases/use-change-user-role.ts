@@ -5,6 +5,8 @@ import { toast } from "sonner"
 
 import { changeUserRoleAction } from "@/features/users/actions"
 import type { ChangeUserRoleFormValues } from "@/features/users/schema"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 /**
@@ -13,14 +15,15 @@ import { QUERY_KEYS } from "@/lib/query-keys"
 export function useChangeUserRole(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (values: ChangeUserRoleFormValues) =>
-      changeUserRoleAction(userId, values),
+    mutationFn: async (values: ChangeUserRoleFormValues) =>
+      unwrapActionResult(await changeUserRoleAction(userId, values)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.all })
       toast.success("Role updated")
     },
-    onError: (e) => {
-      toast.error(e instanceof Error ? e.message : "Could not change user role")
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Change user role error:", error)
     },
   })
 }

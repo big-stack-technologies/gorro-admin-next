@@ -1,16 +1,23 @@
 "use server"
 
+import type { TransactionReasonPayload } from "@/features/transactions/schema"
+import type { ActionResult } from "@/lib/actions/action-result"
+import { actionFailure } from "@/lib/actions/action-result"
 import { post } from "@/lib/api/axios"
 import { endpoints } from "@/lib/endpoints"
-import type { TransactionReasonPayload } from "@/features/transactions/schema"
 
 export async function reverseTransactionAction(
   id: string,
   payload: TransactionReasonPayload
-): Promise<unknown> {
-  const { data } = await post<unknown>(
-    endpoints.admin.transactionReverseById(id),
-    payload
-  )
-  return data
+): Promise<ActionResult<unknown>> {
+  try {
+    const { data } = await post<unknown>(
+      endpoints.admin.transactionReverseById(id),
+      payload
+    )
+    return { success: true, data }
+  } catch (error) {
+    console.error(`Reverse transaction action failed for ${id}:`, error)
+    return actionFailure(error, "Could not reverse transaction")
+  }
 }
