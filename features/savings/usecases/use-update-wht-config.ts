@@ -5,20 +5,22 @@ import { toast } from "sonner"
 
 import { updateWhtConfigAction } from "@/features/savings/actions"
 import type { UpdateWhtConfigPayload } from "@/features/savings/types"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useUpdateWhtConfig() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (payload: UpdateWhtConfigPayload) =>
-      updateWhtConfigAction(payload),
+    mutationFn: async (payload: UpdateWhtConfigPayload) =>
+      unwrapActionResult(await updateWhtConfigAction(payload)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.savings.wht })
       toast.success("WHT config updated")
     },
-    onError: (e) => {
-      toast.error(e instanceof Error ? e.message : "Could not update WHT")
-      console.error("Update WHT config error:", e)
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Update WHT config error:", error)
     },
   })
 }

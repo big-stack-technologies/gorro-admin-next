@@ -4,12 +4,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { rejectWithdrawalRequestAction } from "@/features/withdrawal-requests/actions"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useRejectWithdrawalRequest(withdrawalRequestId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => rejectWithdrawalRequestAction(withdrawalRequestId),
+    mutationFn: async () =>
+      unwrapActionResult(
+        await rejectWithdrawalRequestAction(withdrawalRequestId)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.withdrawalRequests.list,
@@ -19,10 +24,9 @@ export function useRejectWithdrawalRequest(withdrawalRequestId: string) {
       })
       toast.success("Withdrawal request rejected")
     },
-    onError: (e) => {
-      toast.error(
-        e instanceof Error ? e.message : "Could not reject withdrawal request"
-      )
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Reject withdrawal request error:", error)
     },
   })
 }

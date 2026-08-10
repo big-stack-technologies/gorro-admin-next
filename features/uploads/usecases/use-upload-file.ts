@@ -4,19 +4,21 @@ import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { uploadFileAction } from "@/features/uploads/actions"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import type { UploadDescription } from "@/lib/types/upload"
 
 export function useUploadFile(description: UploadDescription) {
   return useMutation({
-    mutationFn: (file: File) => {
+    mutationFn: async (file: File) => {
       const formData = new FormData()
       formData.append("file", file)
       formData.append("description", description)
-      return uploadFileAction(formData)
+      return unwrapActionResult(await uploadFileAction(formData))
     },
-    onError: (e) => {
-      toast.error(e instanceof Error ? e.message : "Could not upload file")
-      console.error("Upload file error:", e)
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Upload file error:", error)
     },
   })
 }

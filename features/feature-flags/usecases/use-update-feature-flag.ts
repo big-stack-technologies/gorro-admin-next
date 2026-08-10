@@ -8,13 +8,15 @@ import type {
   FeatureFlag,
   UpdateFeatureFlagPayload,
 } from "@/features/feature-flags/types"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useUpdateFeatureFlag(key: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (payload: UpdateFeatureFlagPayload) =>
-      updateFeatureFlagAction(key, payload),
+    mutationFn: async (payload: UpdateFeatureFlagPayload) =>
+      unwrapActionResult(await updateFeatureFlagAction(key, payload)),
     onMutate: async (payload) => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.featureFlags.list })
 
@@ -42,17 +44,15 @@ export function useUpdateFeatureFlag(key: string) {
     onSuccess: () => {
       toast.success("Feature flag updated")
     },
-    onError: (e, _payload, context) => {
+    onError: (error, _payload, context) => {
       if (context?.previous) {
         queryClient.setQueryData(
           QUERY_KEYS.featureFlags.list,
           context.previous
         )
       }
-      toast.error(
-        e instanceof Error ? e.message : "Could not update feature flag"
-      )
-      console.error("Update feature flag error:", e)
+      toast.error(getApiErrorMessage(error))
+      console.error("Update feature flag error:", error)
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.featureFlags.all })

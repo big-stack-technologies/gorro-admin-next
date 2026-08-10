@@ -4,12 +4,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { retriggerReferralBonusesAction } from "@/features/referrals/actions"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useRetriggerReferralBonuses(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => retriggerReferralBonusesAction(userId),
+    mutationFn: async () =>
+      unwrapActionResult(await retriggerReferralBonusesAction(userId)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.referrals.list })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.referrals.stats })
@@ -18,10 +21,9 @@ export function useRetriggerReferralBonuses(userId: string) {
       })
       toast.success("Referral bonuses retriggered")
     },
-    onError: (e) => {
-      toast.error(
-        e instanceof Error ? e.message : "Could not retrigger referral bonuses"
-      )
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Retrigger referral bonuses error:", error)
     },
   })
 }

@@ -5,13 +5,17 @@ import { toast } from "sonner"
 
 import { reverseTransactionAction } from "@/features/transactions/actions"
 import type { TransactionReasonPayload } from "@/features/transactions/schema"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useReverseTransaction(transactionId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (payload: TransactionReasonPayload) =>
-      reverseTransactionAction(transactionId, payload),
+    mutationFn: async (payload: TransactionReasonPayload) =>
+      unwrapActionResult(
+        await reverseTransactionAction(transactionId, payload)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.transactions.list })
       queryClient.invalidateQueries({
@@ -19,10 +23,9 @@ export function useReverseTransaction(transactionId: string) {
       })
       toast.success("Transaction reversed")
     },
-    onError: (e) => {
-      toast.error(
-        e instanceof Error ? e.message : "Could not reverse transaction"
-      )
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Reverse transaction error:", error)
     },
   })
 }

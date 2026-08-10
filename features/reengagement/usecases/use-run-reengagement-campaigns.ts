@@ -9,6 +9,8 @@ import {
   REENGAGEMENT_CAMPAIGNS,
 } from "@/features/reengagement/constants"
 import type { RunReengagementResponse } from "@/features/reengagement/types"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 function formatRunResults(response: RunReengagementResponse) {
@@ -27,16 +29,13 @@ export function useRunReengagementCampaigns() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: () => runReengagementCampaignsAction(),
+    mutationFn: async () =>
+      unwrapActionResult(await runReengagementCampaignsAction()),
     onSuccess: (response) => {
       toast.success(formatRunResults(response))
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Could not run re-engagement campaigns"
-      )
+      toast.error(getApiErrorMessage(error))
       console.error("Run re-engagement campaigns error:", error)
     },
     onSettled: () => {

@@ -5,6 +5,8 @@ import { toast } from "sonner"
 
 import { updateUserAction } from "@/features/users/actions"
 import type { UpdateUserFormValues } from "@/features/users/schema"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 /**
@@ -13,15 +15,16 @@ import { QUERY_KEYS } from "@/lib/query-keys"
 export function useUpdateUser(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (values: UpdateUserFormValues) =>
-      updateUserAction(userId, values),
+    mutationFn: async (values: UpdateUserFormValues) =>
+      unwrapActionResult(await updateUserAction(userId, values)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.all })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.list })
       toast.success("User updated")
     },
-    onError: (e) => {
-      toast.error(e instanceof Error ? e.message : "Could not update user")
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Update user error:", error)
     },
   })
 }

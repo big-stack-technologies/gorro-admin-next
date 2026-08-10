@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { removeAjoGroupMemberAction } from "@/features/ajo/actions"
+import { unwrapActionResult } from "@/lib/actions/action-result"
 import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
@@ -11,8 +12,10 @@ export function useRemoveAjoGroupMember(groupId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (memberId: string) =>
-      removeAjoGroupMemberAction(groupId, memberId),
+    mutationFn: async (memberId: string) =>
+      unwrapActionResult(
+        await removeAjoGroupMemberAction(groupId, memberId)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ajo.groups.list })
       queryClient.invalidateQueries({

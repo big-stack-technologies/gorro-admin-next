@@ -8,20 +8,24 @@ import type {
   SavingsProductType,
   UpdateSavingsRatePayload,
 } from "@/features/savings/types"
+import { unwrapActionResult } from "@/lib/actions/action-result"
+import { getApiErrorMessage } from "@/lib/api/api-error"
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function useUpdateSavingsRate(productType: SavingsProductType) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (payload: UpdateSavingsRatePayload) =>
-      updateSavingsRateAction(productType, payload),
+    mutationFn: async (payload: UpdateSavingsRatePayload) =>
+      unwrapActionResult(
+        await updateSavingsRateAction(productType, payload)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.savings.rates })
       toast.success("Rate updated")
     },
-    onError: (e) => {
-      toast.error(e instanceof Error ? e.message : "Could not update rate")
-      console.error("Update savings rate error:", e)
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error))
+      console.error("Update savings rate error:", error)
     },
   })
 }
