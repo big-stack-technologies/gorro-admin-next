@@ -49,3 +49,11 @@ export const verifyUserBvnFormSchema = z.object({
 })
 
 export type VerifyUserBvnFormValues = z.infer<typeof verifyUserBvnFormSchema>
+
+export const createVirtualAccountFormSchema = z.object({
+  provider: z.enum(["flutterwave", "paystack", "monnify", "fincra"]),
+})
+
+export type CreateVirtualAccountFormValues = z.infer<
+  typeof createVirtualAccountFormSchema
+>

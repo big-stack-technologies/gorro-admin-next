@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import {
   EyeIcon,
   KeyRoundIcon,
+  LandmarkIcon,
   PencilIcon,
   ShieldCheckIcon,
   SnowflakeIcon,
@@ -17,12 +18,13 @@ import {
   type DataTableRowActionGroup,
 } from "@/components/data-table"
 import { useGetProfile } from "@/features/auth/usecases"
-import { canVerifyBvn } from "@/features/auth/access"
+import { canCreateVirtualAccount, canVerifyBvn } from "@/features/auth/access"
 import { USER_ROLE } from "@/features/users/constants"
 import type { User } from "@/features/users/types"
 
 import { UserBvnVerificationDialog } from "./user-bvn-verification-dialog"
 import { UserChangeRoleDialog } from "./user-change-role-dialog"
+import { UserCreateVirtualAccountDialog } from "./user-create-virtual-account-dialog"
 import { UserDetailsDialog } from "./user-details-dialog"
 import { UserDisableWithdrawalsDialog } from "./user-disable-withdrawals-dialog"
 import { UserEnableWithdrawalsDialog } from "./user-enable-withdrawals-dialog"
@@ -33,10 +35,12 @@ import { UserUpdateDialog } from "./user-update-dialog"
 type UserRowActionGroupsParams = {
   isSuperAdmin: boolean
   canVerify: boolean
+  canCreateVirtualAccount: boolean
   withdrawalsDisabled: boolean
   onViewUser: () => void
   onUpdateUser: () => void
   onChangeRole: () => void
+  onCreateVirtualAccount: () => void
   onFreeze: () => void
   onResetPin: () => void
   onDisableWithdrawals: () => void
@@ -50,10 +54,12 @@ function useUserRowActionGroups(
   const {
     isSuperAdmin,
     canVerify,
+    canCreateVirtualAccount: canCreate,
     withdrawalsDisabled,
     onViewUser,
     onUpdateUser,
     onChangeRole,
+    onCreateVirtualAccount,
     onFreeze,
     onResetPin,
     onDisableWithdrawals,
@@ -78,6 +84,16 @@ function useUserRowActionGroups(
             icon: PencilIcon,
             onSelect: onUpdateUser,
           },
+          ...(canCreate
+            ? [
+                {
+                  id: "create-virtual-account",
+                  label: "Create virtual account",
+                  icon: LandmarkIcon,
+                  onSelect: onCreateVirtualAccount,
+                },
+              ]
+            : []),
           ...(isSuperAdmin
             ? [
                 {
@@ -142,10 +158,12 @@ function useUserRowActionGroups(
     [
       isSuperAdmin,
       canVerify,
+      canCreate,
       withdrawalsDisabled,
       onViewUser,
       onUpdateUser,
       onChangeRole,
+      onCreateVirtualAccount,
       onFreeze,
       onResetPin,
       onDisableWithdrawals,
@@ -164,9 +182,11 @@ export function UserRowActions({ user }: UserRowActionsProps) {
   const isSuperAdmin =
     profile?.roles?.includes(USER_ROLE.super_admin) === true
   const canVerify = canVerifyBvn(profile?.roles)
+  const canCreate = canCreateVirtualAccount(profile?.roles)
 
   const [viewOpen, setViewOpen] = useState(false)
   const [updateOpen, setUpdateOpen] = useState(false)
+  const [createVirtualAccountOpen, setCreateVirtualAccountOpen] = useState(false)
   const [roleOpen, setRoleOpen] = useState(false)
   const [freezeOpen, setFreezeOpen] = useState(false)
   const [resetPinOpen, setResetPinOpen] = useState(false)
@@ -179,6 +199,7 @@ export function UserRowActions({ user }: UserRowActionsProps) {
       onViewUser: () => setViewOpen(true),
       onUpdateUser: () => setUpdateOpen(true),
       onChangeRole: () => setRoleOpen(true),
+      onCreateVirtualAccount: () => setCreateVirtualAccountOpen(true),
       onFreeze: () => setFreezeOpen(true),
       onResetPin: () => setResetPinOpen(true),
       onDisableWithdrawals: () => setDisableWithdrawalsOpen(true),
@@ -191,6 +212,7 @@ export function UserRowActions({ user }: UserRowActionsProps) {
   const groups = useUserRowActionGroups({
     isSuperAdmin,
     canVerify,
+    canCreateVirtualAccount: canCreate,
     withdrawalsDisabled: user.withdrawalsDisabled,
     ...openActions,
   })
@@ -204,6 +226,13 @@ export function UserRowActions({ user }: UserRowActionsProps) {
       />
       <UserDetailsDialog user={user} open={viewOpen} onOpenChange={setViewOpen} />
       <UserUpdateDialog user={user} open={updateOpen} onOpenChange={setUpdateOpen} />
+      {canCreate ? (
+        <UserCreateVirtualAccountDialog
+          user={user}
+          open={createVirtualAccountOpen}
+          onOpenChange={setCreateVirtualAccountOpen}
+        />
+      ) : null}
       {isSuperAdmin ? (
         <>
           <UserChangeRoleDialog

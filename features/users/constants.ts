@@ -49,6 +49,35 @@ export const USER_ROLE_FILTER_OPTIONS = USER_ROLES.map((value) => ({
   label: USER_ROLE_LABELS[value],
 }))
 
+export const VIRTUAL_ACCOUNT_PROVIDERS = [
+  "fincra",
+  "flutterwave",
+  "paystack",
+  "monnify",
+] as const
+
+export type VirtualAccountProviderValue =
+  (typeof VIRTUAL_ACCOUNT_PROVIDERS)[number]
+
+export const DEFAULT_VIRTUAL_ACCOUNT_PROVIDER: VirtualAccountProviderValue =
+  "fincra"
+
+const VIRTUAL_ACCOUNT_PROVIDER_LABELS: Record<
+  VirtualAccountProviderValue,
+  string
+> = {
+  fincra: "Fincra",
+  flutterwave: "Flutterwave",
+  paystack: "Paystack",
+  monnify: "Monnify",
+}
+
+export const VIRTUAL_ACCOUNT_PROVIDER_OPTIONS =
+  VIRTUAL_ACCOUNT_PROVIDERS.map((value) => ({
+    value,
+    label: VIRTUAL_ACCOUNT_PROVIDER_LABELS[value],
+  }))
+
 /** Moderator or super_admin — required for withdrawal request approve/reject. */
 export function isModeratorOrAbove(roles?: string[]): boolean {
   if (!roles?.length) return false

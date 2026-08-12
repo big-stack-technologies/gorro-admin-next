@@ -16,6 +16,8 @@ export const endpoints = {
       `/admin/users/${encodeURIComponent(id)}/withdrawals/disable`,
     userWithdrawalsEnableById: (id: string) =>
       `/admin/users/${encodeURIComponent(id)}/withdrawals/enable`,
+    userVirtualAccountById: (id: string) =>
+      `/admin/users/${encodeURIComponent(id)}/virtual-account`,
     withdrawalRequests: "/admin/users/withdrawal-requests",
     withdrawalRequestById: (id: string) =>
       `/admin/users/withdrawal-requests/${encodeURIComponent(id)}`,

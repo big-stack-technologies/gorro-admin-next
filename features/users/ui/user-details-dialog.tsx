@@ -1,6 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { useState } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,11 +13,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
-import { canVerifyBvn } from "@/features/auth/access"
+import { canCreateVirtualAccount, canVerifyBvn } from "@/features/auth/access"
 import { useGetProfile } from "@/features/auth/usecases"
 import type { User } from "@/features/users/types"
 import { UserBvnVerificationPanel } from "@/features/users/ui/user-bvn-verification-panel"
+import { UserCreateVirtualAccountDialog } from "@/features/users/ui/user-create-virtual-account-dialog"
 import { UserWalletBalancePopover } from "@/features/users/ui/user-wallet-balance-popover"
+import { getVirtualAccountEligibility } from "@/features/users/virtual-account-eligibility"
 import { useGetUser } from "@/features/users/usecases"
 import { isApiError } from "@/lib/api/api-error"
 import {
@@ -70,6 +73,9 @@ export function UserDetailsDialog({
 }: UserDetailsDialogProps) {
   const { data: profile } = useGetProfile()
   const canVerify = canVerifyBvn(profile?.roles)
+  const canCreate = canCreateVirtualAccount(profile?.roles)
+  const [createVirtualAccountOpen, setCreateVirtualAccountOpen] = useState(false)
+  const { eligible, missingFields } = getVirtualAccountEligibility(user)
 
   const userQuery = useGetUser(user.id, open)
   const {
@@ -81,8 +87,9 @@ export function UserDetailsDialog({
   const displayUser = userDetail ?? user
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 p-0 sm:max-w-lg">
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="gap-0 p-0 sm:max-w-lg">
         <DialogHeader className="border-b px-4 py-4">
           <DialogTitle>User details</DialogTitle>
           <DialogDescription className="truncate">{user.email}</DialogDescription>
@@ -125,6 +132,33 @@ export function UserDetailsDialog({
             <h3 className="mb-3 text-sm font-semibold">Identity verification</h3>
             <UserBvnVerificationPanel user={user} canVerify={canVerify} />
           </div>
+
+          {canCreate ? (
+            <div className="border-t border-border/60 py-4">
+              <h3 className="mb-3 text-sm font-semibold">Virtual account</h3>
+              {eligible ? (
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Provision a funding account when automatic creation at KYC Tier
+                  1 failed. Safe to retry — existing accounts return the same
+                  details.
+                </p>
+              ) : (
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Add {missingFields.join(", ")} before creating a virtual
+                  account.
+                </p>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={!eligible}
+                onClick={() => setCreateVirtualAccountOpen(true)}
+              >
+                Create virtual account
+              </Button>
+            </div>
+          ) : null}
 
           <dl className="py-2">
             <DetailRow
@@ -182,6 +216,14 @@ export function UserDetailsDialog({
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+      {canCreate ? (
+        <UserCreateVirtualAccountDialog
+          user={user}
+          open={createVirtualAccountOpen}
+          onOpenChange={setCreateVirtualAccountOpen}
+        />
+      ) : null}
+    </>
   )
 }
