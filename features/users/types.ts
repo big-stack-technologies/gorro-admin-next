@@ -70,3 +70,37 @@ export type VerifyUserBvnResponse = {
   data: VerifyUserBvnData
   message: string
 }
+
+export type VirtualAccountProvider =
+  | "flutterwave"
+  | "paystack"
+  | "monnify"
+  | "fincra"
+
+export type VirtualAccountNuban = {
+  accountNumber: string
+  accountName: string
+  bankName: string
+  bankCode: string
+}
+
+export type VirtualAccountData = {
+  ownerId: string
+  internalAccountNumber: string
+  nuban: VirtualAccountNuban
+}
+
+export type CreateVirtualAccountPayload = {
+  provider: VirtualAccountProvider
+}
+
+export type CreateVirtualAccountResponse = {
+  success: boolean
+  message: string
+  data: VirtualAccountData
+}
+
+export type CreateVirtualAccountResult = {
+  account: VirtualAccountData
+  message: string
+}

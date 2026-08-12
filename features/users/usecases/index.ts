@@ -1,4 +1,5 @@
 export * from "./use-change-user-role"
+export * from "./use-create-user-virtual-account"
 export * from "./use-disable-user-withdrawals"
 export * from "./use-enable-user-withdrawals"
 export * from "./use-freeze-user"

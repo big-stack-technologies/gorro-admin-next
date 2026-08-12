@@ -32,6 +32,10 @@ export function canVerifyBvn(roles?: string[]): boolean {
   return canManageClusters(roles)
 }
 
+export function canCreateVirtualAccount(roles?: string[]): boolean {
+  return canManageClusters(roles)
+}
+
 /** Decide NIN reviews: super_admin or support_agent. Moderator is view-only. */
 export function canDecideNinReview(roles?: string[]): boolean {
   if (!roles?.length) return false
