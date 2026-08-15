@@ -40,16 +40,17 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  getReengagementAudienceLabel,
-  REENGAGEMENT_AUDIENCE_OPTIONS,
-} from "@/features/reengagement/constants"
-import {
   parseEmailList,
   sendReengagementEmailFormSchema,
   type SendReengagementEmailFormValues,
 } from "@/features/reengagement/schema"
 import type { SendReengagementEmailPayload } from "@/features/reengagement/types"
-import { useSendReengagementEmail } from "@/features/reengagement/usecases"
+import { ReengagementAudienceField } from "@/features/reengagement/ui/reengagement-audience-field"
+import { findAudienceOption } from "@/features/reengagement/audience-utils"
+import {
+  useReengagementAudiences,
+  useSendReengagementEmail,
+} from "@/features/reengagement/usecases"
 
 const defaultValues: SendReengagementEmailFormValues = {
   subject: "",
@@ -57,6 +58,7 @@ const defaultValues: SendReengagementEmailFormValues = {
   recipientMode: "emails",
   emails: "",
   audience: "ALL",
+  balanceBelow: undefined,
 }
 
 function toPayload(
@@ -74,19 +76,23 @@ function toPayload(
     subject: values.subject.trim(),
     body: values.body.trim(),
     audience: values.audience,
+    ...(values.audience === "LOW_BALANCE" && values.balanceBelow != null
+      ? { balanceBelow: values.balanceBelow }
+      : {}),
   }
 }
 
-function getRecipientSummary(values: SendReengagementEmailFormValues) {
+function getRecipientSummary(
+  values: SendReengagementEmailFormValues,
+  audienceLabel?: string
+) {
   if (values.recipientMode === "emails") {
     const emails = parseEmailList(values.emails ?? "")
     if (emails.length === 1) return emails[0]
     return `${emails.length} specific addresses`
   }
 
-  return values.audience
-    ? getReengagementAudienceLabel(values.audience)
-    : "selected audience"
+  return audienceLabel ?? values.audience ?? "selected audience"
 }
 
 export function SendReengagementEmailForm() {
@@ -110,7 +116,14 @@ export function SendReengagementEmailForm() {
   } = form
 
   const recipientMode = watch("recipientMode")
+  const audience = watch("audience")
+  const balanceBelow = watch("balanceBelow")
   const pending = mutation.isPending
+
+  const audiencesQuery = useReengagementAudiences(
+    audience === "LOW_BALANCE" && balanceBelow != null ? { balanceBelow } : {},
+    recipientMode === "audience"
+  )
 
   const onSubmit = (values: SendReengagementEmailFormValues) => {
     setPendingValues(values)
@@ -218,38 +231,24 @@ export function SendReengagementEmailForm() {
                   <FieldError errors={[errors.emails]} />
                 </Field>
               ) : (
-                <Field data-invalid={errors.audience ? true : undefined}>
-                  <FieldLabel htmlFor="email-audience">Audience</FieldLabel>
-                  <Controller
-                    name="audience"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={pending}
-                      >
-                        <SelectTrigger
-                          id="email-audience"
-                          className="w-full min-w-0"
-                          aria-invalid={!!errors.audience}
-                        >
-                          <SelectValue placeholder="Select audience" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {REENGAGEMENT_AUDIENCE_OPTIONS.map(
-                            ({ value, label }) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            )
-                          )}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  <FieldError errors={[errors.audience]} />
-                </Field>
+                <Controller
+                  name="audience"
+                  control={control}
+                  render={({ field }) => (
+                    <ReengagementAudienceField
+                      id="email-audience"
+                      channel="email"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      balanceBelow={balanceBelow}
+                      onBalanceBelowChange={(value) =>
+                        form.setValue("balanceBelow", value)
+                      }
+                      disabled={pending}
+                      error={errors.audience}
+                    />
+                  )}
+                />
               )}
             </FieldGroup>
 
@@ -278,7 +277,15 @@ export function SendReengagementEmailForm() {
                 </p>
                 <p>
                   <span className="font-medium text-foreground">To:</span>{" "}
-                  {pendingValues ? getRecipientSummary(pendingValues) : ""}
+                  {pendingValues
+                    ? getRecipientSummary(
+                        pendingValues,
+                        findAudienceOption(
+                          audiencesQuery.data?.audiences,
+                          pendingValues.audience
+                        )?.label
+                      )
+                    : ""}
                 </p>
                 {isAudienceBlast ? (
                   <p className="text-destructive">

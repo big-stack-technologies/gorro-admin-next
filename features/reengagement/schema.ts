@@ -1,7 +1,5 @@
 import { z } from "zod"
 
-import { REENGAGEMENT_AUDIENCES } from "@/features/reengagement/constants"
-
 export const updateReengagementConfigFormSchema = z.object({
   masterEnabled: z.boolean(),
   kycReminderEnabled: z.boolean(),
@@ -26,7 +24,8 @@ export const broadcastReengagementFormSchema = z
     body: z.string().min(1, "Body is required"),
     recipientMode: z.enum(["preview", "audience"]),
     previewEmail: z.string().optional(),
-    audience: z.enum(REENGAGEMENT_AUDIENCES).optional(),
+    audience: z.string().optional(),
+    balanceBelow: z.number().int().positive().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.recipientMode === "preview") {
@@ -69,7 +68,8 @@ export const sendReengagementEmailFormSchema = z
     body: z.string().min(1, "Body is required"),
     recipientMode: z.enum(["emails", "audience"]),
     emails: z.string().optional(),
-    audience: z.enum(REENGAGEMENT_AUDIENCES).optional(),
+    audience: z.string().optional(),
+    balanceBelow: z.number().int().positive().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.recipientMode === "emails") {

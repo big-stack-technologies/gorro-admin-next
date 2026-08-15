@@ -103,6 +103,8 @@ export const QUERY_KEYS = {
     all: ["reengagement"] as const,
     config: ["reengagement", "config"] as const,
     segments: ["reengagement", "segments"] as const,
+    audiences: (params?: { balanceBelow?: number }) =>
+      ["reengagement", "audiences", params?.balanceBelow ?? null] as const,
     nudges: {
       list: ["reengagement", "nudges", "list"] as const,
     },

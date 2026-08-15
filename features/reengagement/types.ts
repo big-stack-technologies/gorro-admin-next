@@ -80,13 +80,44 @@ export type ReengagementApiPaginatedResponse<T> = {
   hasMore?: boolean
 }
 
-export type ReengagementAudience = "ALL" | "VERIFIED" | "UNVERIFIED"
+export type ReengagementAudience = string
+
+export type ReengagementAudienceParam = {
+  name: string
+  type: string
+  unit?: string
+  default?: number
+  value?: number
+  description?: string
+}
+
+export type ReengagementAudienceOption = {
+  value: string
+  label: string
+  description: string
+  matching: number
+  withPushToken: number
+  withEmail: number
+  percentOfAllUsers: number
+  params?: ReengagementAudienceParam[]
+}
+
+export type ReengagementAudiencesResponse = {
+  generatedAt: string
+  totalActiveUsers: number
+  audiences: ReengagementAudienceOption[]
+}
+
+export type ReengagementAudiencesQuery = {
+  balanceBelow?: number
+}
 
 export type BroadcastReengagementPayload = {
   title: string
   body: string
   audience?: ReengagementAudience
   email?: string
+  balanceBelow?: number
 }
 
 export type BroadcastReengagementResponse = {
@@ -101,6 +132,7 @@ export type SendReengagementEmailPayload = {
   body: string
   emails?: string[]
   audience?: ReengagementAudience
+  balanceBelow?: number
 }
 
 export type SendReengagementEmailResponse = {

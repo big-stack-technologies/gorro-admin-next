@@ -40,15 +40,13 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  getReengagementAudienceLabel,
-  REENGAGEMENT_AUDIENCE_OPTIONS,
-} from "@/features/reengagement/constants"
-import {
   broadcastReengagementFormSchema,
   type BroadcastReengagementFormValues,
 } from "@/features/reengagement/schema"
 import type { BroadcastReengagementPayload } from "@/features/reengagement/types"
-import { useBroadcastReengagement } from "@/features/reengagement/usecases"
+import { ReengagementAudienceField } from "@/features/reengagement/ui/reengagement-audience-field"
+import { findAudienceOption } from "@/features/reengagement/audience-utils"
+import { useBroadcastReengagement, useReengagementAudiences } from "@/features/reengagement/usecases"
 
 const defaultValues: BroadcastReengagementFormValues = {
   title: "",
@@ -56,6 +54,7 @@ const defaultValues: BroadcastReengagementFormValues = {
   recipientMode: "preview",
   previewEmail: "",
   audience: "ALL",
+  balanceBelow: undefined,
 }
 
 function toPayload(values: BroadcastReengagementFormValues): BroadcastReengagementPayload {
@@ -71,17 +70,21 @@ function toPayload(values: BroadcastReengagementFormValues): BroadcastReengageme
     title: values.title.trim(),
     body: values.body.trim(),
     audience: values.audience,
+    ...(values.audience === "LOW_BALANCE" && values.balanceBelow != null
+      ? { balanceBelow: values.balanceBelow }
+      : {}),
   }
 }
 
-function getRecipientSummary(values: BroadcastReengagementFormValues) {
+function getRecipientSummary(
+  values: BroadcastReengagementFormValues,
+  audienceLabel?: string
+) {
   if (values.recipientMode === "preview") {
     return values.previewEmail?.trim() ?? "preview recipient"
   }
 
-  return values.audience
-    ? getReengagementAudienceLabel(values.audience)
-    : "selected audience"
+  return audienceLabel ?? values.audience ?? "selected audience"
 }
 
 export function BroadcastReengagementForm() {
@@ -105,7 +108,14 @@ export function BroadcastReengagementForm() {
   } = form
 
   const recipientMode = watch("recipientMode")
+  const audience = watch("audience")
+  const balanceBelow = watch("balanceBelow")
   const pending = mutation.isPending
+
+  const audiencesQuery = useReengagementAudiences(
+    audience === "LOW_BALANCE" && balanceBelow != null ? { balanceBelow } : {},
+    recipientMode === "audience"
+  )
 
   const onSubmit = (values: BroadcastReengagementFormValues) => {
     setPendingValues(values)
@@ -213,38 +223,24 @@ export function BroadcastReengagementForm() {
                   <FieldError errors={[errors.previewEmail]} />
                 </Field>
               ) : (
-                <Field data-invalid={errors.audience ? true : undefined}>
-                  <FieldLabel htmlFor="broadcast-audience">Audience</FieldLabel>
-                  <Controller
-                    name="audience"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={pending}
-                      >
-                        <SelectTrigger
-                          id="broadcast-audience"
-                          className="w-full min-w-0"
-                          aria-invalid={!!errors.audience}
-                        >
-                          <SelectValue placeholder="Select audience" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {REENGAGEMENT_AUDIENCE_OPTIONS.map(
-                            ({ value, label }) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            )
-                          )}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  <FieldError errors={[errors.audience]} />
-                </Field>
+                <Controller
+                  name="audience"
+                  control={control}
+                  render={({ field }) => (
+                    <ReengagementAudienceField
+                      id="broadcast-audience"
+                      channel="push"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      balanceBelow={balanceBelow}
+                      onBalanceBelowChange={(value) =>
+                        form.setValue("balanceBelow", value)
+                      }
+                      disabled={pending}
+                      error={errors.audience}
+                    />
+                  )}
+                />
               )}
             </FieldGroup>
 
@@ -273,7 +269,15 @@ export function BroadcastReengagementForm() {
                 </p>
                 <p>
                   <span className="font-medium text-foreground">To:</span>{" "}
-                  {pendingValues ? getRecipientSummary(pendingValues) : ""}
+                  {pendingValues
+                    ? getRecipientSummary(
+                        pendingValues,
+                        findAudienceOption(
+                          audiencesQuery.data?.audiences,
+                          pendingValues.audience
+                        )?.label
+                      )
+                    : ""}
                 </p>
                 {pendingValues?.recipientMode === "audience" ? (
                   <p className="text-destructive">

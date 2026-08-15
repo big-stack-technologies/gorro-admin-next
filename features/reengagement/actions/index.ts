@@ -1,3 +1,4 @@
+export { getReengagementAudiencesAction } from "./get-reengagement-audiences"
 export { broadcastReengagementAction } from "./broadcast-reengagement"
 export { getReengagementConfigAction } from "./get-reengagement-config"
 export { updateReengagementConfigAction } from "./update-reengagement-config"
