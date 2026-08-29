@@ -55,6 +55,11 @@ function isReengagementAdminPath(pathname: string): boolean {
   return pathname === base || pathname.startsWith(`${base}/`)
 }
 
+function isSavingsAdminPath(pathname: string): boolean {
+  const base = routes.protected.savings.base
+  return pathname === base || pathname.startsWith(`${base}/`)
+}
+
 export function isAdminDashboardPath(pathname: string): boolean {
   const normalized =
     pathname.length > 1 && pathname.endsWith("/")
@@ -67,7 +72,9 @@ export function canAccessAdminRoute(
   roles: string[] | undefined,
   pathname: string
 ): boolean {
-  if (isPartnerOnly(roles)) return isAdminDashboardPath(pathname)
+  if (isPartnerOnly(roles)) {
+    return isAdminDashboardPath(pathname) || isSavingsAdminPath(pathname)
+  }
   if (isClusterAdminPath(pathname)) return canManageClusters(roles)
   if (isReengagementAdminPath(pathname)) return canManageReengagement(roles)
   return true

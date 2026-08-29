@@ -8,6 +8,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { isPartnerOnly } from "@/features/auth/access"
+import { useGetProfile } from "@/features/auth/usecases"
 import { listSavingsAccountsAction } from "@/features/savings/actions"
 import { savingsAccountsColumns } from "@/features/savings/columns"
 import { savingsAccountsTableFilters } from "@/features/savings/table-filters"
@@ -16,6 +18,21 @@ import { SavingsRatesSection } from "@/features/savings/ui/savings-rates-section
 import { QUERY_KEYS } from "@/lib/query-keys"
 
 export function SavingsPage() {
+  const { data: profile } = useGetProfile()
+  const partnerOnly = isPartnerOnly(profile?.roles)
+
+  if (partnerOnly) {
+    return (
+      <div className="flex flex-col gap-8 px-4 pb-8 lg:px-6">
+        <AdminPageHeader
+          title="Savings"
+          description="Monitor savings metrics and product performance."
+        />
+        <SavingsMetricsSection />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-8 px-4 pb-8 lg:px-6">
       <AdminPageHeader

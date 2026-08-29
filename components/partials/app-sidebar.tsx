@@ -225,7 +225,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     .map((section) => ({
       ...section,
       items: section.items.filter((item) => {
-        if (partnerOnly) return item.url === routes.protected.admin.base
+        if (partnerOnly) {
+          return (
+            item.url === routes.protected.admin.base ||
+            item.url === routes.protected.savings.base
+          )
+        }
         if (
           item.url === routes.protected.clusters.base ||
           item.url === routes.protected.clusters.withdrawals
